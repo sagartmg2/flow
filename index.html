@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Adjustment Form</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+* { box-sizing: border-box; }
+body { font-family: 'DM Sans', sans-serif; background: #0c0d0f; color: #e2e4e9; min-height: 100vh; }
+.mono { font-family: 'DM Mono', monospace; }
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-thumb { background: #2a2d35; border-radius: 4px; }
+
+.step-line  { width:1px; background:linear-gradient(to bottom,#2a2d35,transparent); flex:1; min-height:24px; margin-left:13px; }
+.step-dot   { width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:500; flex-shrink:0; transition:all .3s; }
+.step-dot.done   { background:#16a34a; color:#fff; }
+.step-dot.active { background:#f0a500; color:#0c0d0f; box-shadow:0 0 0 4px rgba(240,165,0,.15); }
+.step-dot.pending{ background:#1a1c22; border:1px solid #2a2d35; color:#555; }
+
+.card        { background:#13151a; border:1px solid #1f2229; border-radius:12px; }
+.card-inner  { background:#0e1014; border:1px solid #1a1c22; border-radius:8px; }
+
+.inp { background:#0e1014; border:1px solid #222530; border-radius:8px; color:#e2e4e9; padding:10px 14px; width:100%; font-family:'DM Sans',sans-serif; font-size:14px; transition:border-color .2s; outline:none; }
+.inp:focus { border-color:#f0a500; }
+.inp:disabled { opacity:.4; cursor:not-allowed; }
+select.inp { cursor:pointer; }
+option { background:#13151a; }
+
+.label { font-size:11px; font-weight:500; color:#5c6070; letter-spacing:.08em; text-transform:uppercase; margin-bottom:6px; display:block; }
+
+.btn-primary   { background:#f0a500; color:#0c0d0f; font-weight:600; font-size:14px; padding:10px 22px; border-radius:8px; border:none; cursor:pointer; transition:all .2s; }
+.btn-primary:hover { background:#ffb520; transform:translateY(-1px); }
+.btn-primary:disabled { opacity:.4; cursor:not-allowed; transform:none; }
+.btn-secondary { background:transparent; color:#8890a0; font-size:14px; padding:10px 20px; border-radius:8px; border:1px solid #222530; cursor:pointer; transition:all .2s; }
+.btn-secondary:hover { border-color:#3a3f4e; color:#e2e4e9; }
+
+.badge { display:inline-flex; align-items:center; font-size:11px; font-weight:500; padding:3px 8px; border-radius:4px; }
+.badge-green  { background:rgba(22,163,74,.15);  color:#4ade80; border:1px solid rgba(74,222,128,.2); }
+.badge-amber  { background:rgba(240,165,0,.12);  color:#f0a500; border:1px solid rgba(240,165,0,.25); }
+.badge-red    { background:rgba(239,68,68,.12);  color:#f87171; border:1px solid rgba(248,113,113,.2); }
+.badge-blue   { background:rgba(59,130,246,.12); color:#60a5fa; border:1px solid rgba(96,165,250,.2); }
+.badge-gray   { background:rgba(100,116,139,.12);color:#94a3b8; border:1px solid rgba(148,163,184,.2); }
+.badge-teal   { background:rgba(20,184,166,.12); color:#2dd4bf; border:1px solid rgba(45,212,191,.2); }
+.badge-violet { background:rgba(139,92,246,.12); color:#a78bfa; border:1px solid rgba(167,139,250,.2); }
+
+/* step 3 CID cards */
+.cid-card { border:1px solid #1f2229; border-radius:10px; transition:all .2s; overflow:hidden; }
+.cid-card:hover { border-color:#2e3340; }
+.cid-card.selected { border-color:rgba(240,165,0,.45); background:rgba(240,165,0,.025); }
+.cid-card-header { padding:14px 16px; cursor:pointer; display:flex; align-items:center; gap:12px; }
+.cid-charges { border-top:1px solid #1a1c22; display:grid; grid-template-columns:1fr 1fr 1fr; }
+.charge-cell { padding:10px 14px; border-right:1px solid #1a1c22; }
+.charge-cell:last-child { border-right:none; }
+
+/* step 4 CID adj blocks */
+.cid-adj-block { border:1px solid #1f2229; border-radius:12px; overflow:hidden; margin-bottom:16px; }
+.cid-adj-block-hdr { background:#0e1014; padding:12px 16px; border-bottom:1px solid #1f2229; display:flex; align-items:center; justify-content:space-between; }
+.cid-adj-block-body { padding:14px 16px; }
+
+/* adj type accordion */
+.att { border:1px solid #1f2229; border-radius:8px; overflow:hidden; margin-bottom:8px; transition:border-color .2s; }
+.att.on { border-color:rgba(240,165,0,.4); }
+.att-hdr { display:flex; align-items:center; gap:10px; padding:11px 14px; cursor:pointer; user-select:none; transition:background .15s; }
+.att-hdr:hover { background:rgba(255,255,255,.02); }
+.att-body { padding:0 14px 14px; }
+
+/* toggle pill */
+.tog { width:36px; height:20px; border-radius:10px; background:#1f2229; border:1px solid #2a2d35; display:flex; align-items:center; padding:2px; transition:all .2s; flex-shrink:0; }
+.tog.on { background:#f0a500; border-color:#f0a500; }
+.tog-knob { width:14px; height:14px; border-radius:50%; background:#555; transition:all .2s; }
+.tog.on .tog-knob { background:#0c0d0f; transform:translateX(16px); }
+
+/* date range row */
+.dr-row { display:grid; grid-template-columns:1fr 1fr auto; gap:8px; align-items:end; background:#0c0e12; border:1px solid #1a1c22; border-radius:8px; padding:10px; }
+.rm-btn { width:30px; height:30px; border-radius:6px; background:rgba(239,68,68,.07); border:1px solid rgba(239,68,68,.18); color:#f87171; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:13px; transition:all .2s; flex-shrink:0; }
+.rm-btn:hover:not(:disabled) { background:rgba(239,68,68,.15); }
+.rm-btn:disabled { opacity:.25; cursor:not-allowed; }
+
+.section { display:none; }
+.section.active { display:block; animation:fadeSlide .3s ease; }
+@keyframes fadeSlide { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+@keyframes shake    { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+
+.divider { height:1px; background:#1a1c22; margin:18px 0; }
+.ovlp-warn { background:rgba(239,68,68,.07); border:1px solid rgba(239,68,68,.25); border-radius:8px; padding:9px 13px; font-size:12px; color:#f87171; display:flex; align-items:center; gap:8px; }
+.amt-disp { background:#0e1014; border:1px solid #1a1c22; border-radius:8px; padding:10px 14px; display:flex; justify-content:space-between; align-items:center; }
+.upload-zone { border:1.5px dashed #2a2d35; border-radius:8px; padding:16px; text-align:center; cursor:pointer; transition:all .2s; }
+.upload-zone:hover { border-color:#f0a500; background:rgba(240,165,0,.02); }
+input[type="date"]::-webkit-calendar-picker-indicator { filter:invert(.4); cursor:pointer; }
+
+/* preview */
+.prev-cid  { border:1px solid #1f2229; border-radius:10px; overflow:hidden; margin-bottom:12px; }
+.prev-cid-hdr { background:#0e1014; padding:10px 16px; border-bottom:1px solid #1a1c22; display:flex; justify-content:space-between; align-items:center; }
+.prev-adj-row { padding:10px 16px; border-bottom:1px solid #111318; display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
+.prev-adj-row:last-child { border-bottom:none; }
+.prev-tot { background:rgba(240,165,0,.04); padding:10px 16px; display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(240,165,0,.15); }
+
+/* checkbox */
+.chk { width:18px; height:18px; border:1.5px solid #2a2d35; border-radius:4px; background:#0e1014; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; transition:all .2s; }
+.chk.on { background:#f0a500; border-color:#f0a500; }
+.chk.on::after { content:''; width:10px; height:6px; border-left:2px solid #0c0d0f; border-bottom:2px solid #0c0d0f; transform:rotate(-45deg) translateY(-1px); display:block; }
+</style>
+</head>
+<body class="p-4 md:p-8">
+<div class="max-w-5xl mx-auto">
+
+  <!-- Header -->
+  <div class="mb-8">
+    <div class="flex items-center gap-3 mb-1">
+      <div class="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2L2 5v6l6 3 6-3V5L8 2z" stroke="#f0a500" stroke-width="1.2" stroke-linejoin="round"/><path d="M8 2v12M2 5l6 3 6-3" stroke="#f0a500" stroke-width="1.2" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="mono text-xs text-slate-500 tracking-widest uppercase">Billing System</span>
+    </div>
+    <h1 class="text-2xl font-semibold text-white mt-2">Adjustment Request</h1>
+    <p class="text-sm text-slate-500 mt-1">Submit a billing adjustment before invoice generation</p>
+  </div>
+
+  <div class="flex gap-6">
+    <!-- Sidebar -->
+    <div class="hidden md:flex flex-col w-52 flex-shrink-0">
+      <div class="card p-4 sticky top-8">
+        <p class="label mb-4">Progress</p>
+        <div id="step-list"></div>
+        <div class="divider"></div>
+        <div class="text-xs text-slate-500 space-y-1.5">
+          <div class="flex justify-between"><span>Parent CID</span><span id="sb-parent" class="mono text-slate-400 text-right max-w-24 truncate">—</span></div>
+          <div class="flex justify-between"><span>Cycle</span><span id="sb-cycle" class="text-slate-400 text-right max-w-24 truncate">—</span></div>
+          <div class="flex justify-between"><span>CIDs</span><span id="sb-cids" class="text-slate-400">—</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex-1 min-w-0">
+
+      <!-- ─── STEP 1: Parent CID ─── -->
+      <div class="section active card p-6" id="sec-1">
+        <div class="flex items-center gap-3 mb-5">
+          <span class="mono text-xs text-amber-500 bg-amber-500/10 px-2 py-1 rounded">01</span>
+          <h2 class="text-base font-semibold">Select parent CID</h2>
+        </div>
+        <label class="label">Customer account</label>
+        <select class="inp" id="parent-cid" onchange="onParentChange()">
+          <option value="">— Choose parent CID —</option>
+          <option value="E003-B01-19">E003-B01-19 · Everest Broadband (HQ)</option>
+          <option value="E004-K02-11">E004-K02-11 · Summit Corp (HQ)</option>
+          <option value="E005-B03-07">E005-B03-07 · Himalayan Nets (HQ)</option>
+        </select>
+        <div class="mt-5 flex justify-end">
+          <button class="btn-primary" onclick="goTo(2)">Next →</button>
+        </div>
+      </div>
+
+      <!-- ─── STEP 2: Billing Cycle ─── -->
+      <div class="section card p-6" id="sec-2">
+        <div class="flex items-center gap-3 mb-5">
+          <span class="mono text-xs text-amber-500 bg-amber-500/10 px-2 py-1 rounded">02</span>
+          <h2 class="text-base font-semibold">Select billing cycle</h2>
+        </div>
+        <p class="text-xs text-slate-500 mb-4">Cycles with pending unbilled transactions only.</p>
+        <div id="cycle-list" class="flex flex-col gap-2"></div>
+        <div class="mt-5 flex justify-between">
+          <button class="btn-secondary" onclick="goTo(1)">← Back</button>
+          <button class="btn-primary" id="btn-2" onclick="goTo(3)" disabled>Next →</button>
+        </div>
+      </div>
+
+      <!-- ─── STEP 3: Select CIDs + view all charges ─── -->
+      <div class="section card p-6" id="sec-3">
+        <div class="flex items-center gap-3 mb-2">
+          <span class="mono text-xs text-amber-500 bg-amber-500/10 px-2 py-1 rounded">03</span>
+          <h2 class="text-base font-semibold">Select branch CIDs</h2>
+        </div>
+        <p class="text-xs text-slate-500 mb-4">Each card shows installation, device, and service charges for this cycle. Select the branches to adjust.</p>
+        <div class="flex gap-2 mb-3">
+          <button class="btn-secondary text-xs py-1 px-3" onclick="selectAllCIDs()">Select all</button>
+          <button class="btn-secondary text-xs py-1 px-3" onclick="clearAllCIDs()">Clear</button>
+        </div>
+        <div id="cid-list" class="flex flex-col gap-3"></div>
+        <div class="mt-5 flex justify-between">
+          <button class="btn-secondary" onclick="goTo(2)">← Back</button>
+          <button class="btn-primary" id="btn-3" onclick="goTo(4)" disabled>Next →</button>
+        </div>
+      </div>
+
+      <!-- ─── STEP 4: Per-CID multi-type adjustments ─── -->
+      <div class="section card p-6" id="sec-4">
+        <div class="flex items-center gap-3 mb-2">
+          <span class="mono text-xs text-amber-500 bg-amber-500/10 px-2 py-1 rounded">04</span>
+          <h2 class="text-base font-semibold">Configure adjustments</h2>
+        </div>
+        <p class="text-xs text-slate-500 mb-5">Each CID is independent. Toggle one or more adjustment types per branch — each type has its own fields and date ranges.</p>
+        <div id="adj-blocks"></div>
+
+        <!-- Shared attachments -->
+        <div class="card-inner p-4 mt-2">
+          <p class="label mb-3">Attachments &amp; remarks (shared across all CIDs)</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label class="label">System-down graph</label>
+              <label class="upload-zone block cursor-pointer">
+                <svg class="mx-auto mb-1 opacity-30" width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke="#e2e4e9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span class="text-xs text-slate-500" id="graph-label">Upload image</span>
+                <input type="file" accept="image/*" class="hidden" onchange="handleFile(this,'graph-label')"/>
+              </label>
+            </div>
+            <div>
+              <label class="label">Calculation sheet</label>
+              <label class="upload-zone block cursor-pointer">
+                <svg class="mx-auto mb-1 opacity-30" width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z" stroke="#e2e4e9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 2v6h6M16 13H8M16 17H8" stroke="#e2e4e9" stroke-width="1.5" stroke-linecap="round"/></svg>
+                <span class="text-xs text-slate-500" id="sheet-label">Upload PDF / Excel</span>
+                <input type="file" accept=".pdf,.xlsx,.xls,.csv" class="hidden" onchange="handleFile(this,'sheet-label')"/>
+              </label>
+            </div>
+          </div>
+          <div>
+            <label class="label">General remarks</label>
+            <input class="inp" type="text" id="adj-remarks" placeholder="Optional notes for the approver"/>
+          </div>
+        </div>
+
+        <div class="mt-5 flex justify-between">
+          <button class="btn-secondary" onclick="goTo(3)">← Back</button>
+          <button class="btn-primary" onclick="goTo(5)">Preview →</button>
+        </div>
+      </div>
+
+      <!-- ─── STEP 5: Preview ─── -->
+      <div class="section card p-6" id="sec-5">
+        <div class="flex items-center gap-3 mb-5">
+          <span class="mono text-xs text-green-500 bg-green-500/10 px-2 py-1 rounded">05</span>
+          <h2 class="text-base font-semibold">Preview &amp; submit</h2>
+        </div>
+        <div id="preview-content"></div>
+        <div class="mt-5 flex justify-between">
+          <button class="btn-secondary" onclick="goTo(4)">← Edit</button>
+          <button class="btn-primary" onclick="submitAdjustment()">Submit for approval ↗</button>
+        </div>
+      </div>
+
+      <!-- ─── STEP 6: Submitted ─── -->
+      <div class="section card p-8 text-center" id="sec-6">
+        <div class="w-14 h-14 rounded-full bg-green-500/10 border border-green-500/20 flex items-center justify-center mx-auto mb-4">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#4ade80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h2 class="text-lg font-semibold mb-1">Adjustment submitted</h2>
+        <p class="text-sm text-slate-500 mb-1">Pending approval from <span id="sub-approver" class="text-slate-300"></span></p>
+        <div class="mono text-xs text-amber-500 mb-5" id="sub-ref"></div>
+        <div id="sub-summary" class="text-left card-inner p-4 mb-5 text-sm"></div>
+        <button class="btn-secondary" onclick="resetForm()">New adjustment</button>
+      </div>
+
+    </div><!-- /main -->
+  </div><!-- /layout -->
+</div>
+
+<script>
+// ════════════════════════════════ DATA ════════════════════════════════════════
+const CID_DATA = {
+  'E003-B01-19': {
+    cycles:[
+      {id:'c1',label:'Mar 25–31, 2026',start:'2026-03-25',end:'2026-03-31',fiscal:'FY2082/2083'},
+      {id:'c2',label:'Apr 1–30, 2026', start:'2026-04-01',end:'2026-04-30',fiscal:'FY2082/2083'},
+    ],
+    children:[
+      {id:'E003-K01-49',label:'Kathmandu Branch 1',mrc:28000,install:20000,deviceCharge:28600,
+       devices:[{name:'Cisco Router 2900',price:18600},{name:'TP-Link Switch 24P',price:10000}]},
+      {id:'E003-B01-50',label:'Bhaktapur Branch',  mrc:10000,install:20000,deviceCharge:23600,
+       devices:[{name:'Mikrotik RB4011',price:14800},{name:'HP Switch 1820',price:8800}]},
+      {id:'E003-K01-43',label:'Kathmandu Branch 2',mrc:15000,install:20000,deviceCharge:36600,
+       devices:[{name:'Ubiquiti EdgeRouter',price:22000},{name:'Cisco SG300',price:14600}]},
+    ]
+  },
+  'E004-K02-11': {
+    cycles:[{id:'c3',label:'Mar 1–31, 2026',start:'2026-03-01',end:'2026-03-31',fiscal:'FY2082/2083'}],
+    children:[
+      {id:'E004-K02-A1',label:'Summit Office A',mrc:22000,install:15000,deviceCharge:19000,devices:[{name:'Cisco ISR 1100',price:19000}]},
+      {id:'E004-K02-B2',label:'Summit Office B',mrc:18000,install:15000,deviceCharge:15500,devices:[{name:'Fortinet FG-60F',price:15500}]},
+    ]
+  },
+  'E005-B03-07': {
+    cycles:[{id:'c4',label:'Feb 15–28, 2026',start:'2026-02-15',end:'2026-02-28',fiscal:'FY2082/2083'}],
+    children:[
+      {id:'E005-B03-X1',label:'Himalayan HQ',mrc:35000,install:25000,deviceCharge:42000,devices:[{name:'Juniper SRX300',price:28000},{name:'Aruba CX 6100',price:14000}]},
+    ]
+  }
+};
+
+const ADJ_TYPES = [
+  {key:'outage', label:'Service Outage', icon:'⚡',badge:'badge-red',   desc:'Network downtime — specify affected date ranges'},
+  {key:'unused', label:'Service Unused', icon:'⏸',badge:'badge-gray',  desc:'Service not used — specify unused date ranges'},
+  {key:'device', label:'Device Charge',  icon:'🖥',badge:'badge-blue',  desc:'Revise per-device pricing'},
+  {key:'otc',    label:'OTC / Install',  icon:'🔧',badge:'badge-teal',  desc:'Adjust one-time installation fee'},
+  {key:'renewal',label:'Contract Renewal',icon:'🔄',badge:'badge-violet',desc:'Renewal — modify forward MRC'},
+  {key:'latefee',label:'Late Fee',       icon:'📋',badge:'badge-amber', desc:'Post-invoice late payment discount'},
+  {key:'other',  label:'Other',          icon:'✦', badge:'badge-gray',  desc:'Custom / miscellaneous charge'},
+];
+
+const REASONS = {
+  outage: [{id:1,t:'Fiber Cut'},{id:2,t:'Device Issue'},{id:3,t:'Trunk Issue'},{id:4,t:'Delay Escalation'},{id:6,t:'Office Maintenance'}],
+  unused: [{id:5,t:'Office Closed Temporary'},{id:7,t:'Education Seasonal'},{id:8,t:'Customer Retention'},{id:9,t:'Competitive Offer'},{id:11,t:'Customer Downsize'}],
+  device: [{id:10,t:'Bandwidth Changes'},{id:11,t:'Customer Downsize'}],
+  otc:    [{id:8,t:'Customer Retention'},{id:9,t:'Competitive Offer'}],
+  renewal:[{id:7,t:'Education Seasonal'},{id:8,t:'Customer Retention'},{id:10,t:'Bandwidth Changes'},{id:11,t:'Customer Downsize'}],
+  latefee:[{id:8,t:'Customer Retention'},{id:9,t:'Competitive Offer'}],
+  other:  [{id:1,t:'Fiber Cut'},{id:2,t:'Device Issue'},{id:4,t:'Delay Escalation'},{id:7,t:'Education Seasonal'},{id:8,t:'Customer Retention'},{id:9,t:'Competitive Offer'},{id:10,t:'Bandwidth Changes'}],
+};
+
+const EXISTING_ADJ = [
+  {cid:'E003-K01-49',type:'outage',start:'2026-03-27',end:'2026-03-29'}
+];
+
+// ════════════════════════════════ STATE ═══════════════════════════════════════
+// state.adjData[cid][adjKey] = {
+//   enabled, dateRanges:[{id,start,end}],
+//   devicePrices:{idx:price}, otcAmount, renewalMRC,
+//   otherAmount, lfDiscType, lfDiscVal, reason
+// }
+let state = {step:1, parentCID:'', cycle:null, selectedCIDs:[], adjData:{}};
+let drIdx = 0;
+
+const STEPS = [{n:1,label:'Parent CID'},{n:2,label:'Billing cycle'},{n:3,label:'CID selection'},{n:4,label:'Adjustments'},{n:5,label:'Preview'}];
+
+// ════════════════════════════════ SIDEBAR ════════════════════════════════════
+function renderSidebar() {
+  document.getElementById('step-list').innerHTML = STEPS.map(s => {
+    const cls = s.n<state.step?'done':s.n===state.step?'active':'pending';
+    const tc  = s.n<state.step?'text-green-400':s.n===state.step?'text-amber-400':'text-slate-600';
+    return `<div class="flex items-start gap-3">
+      <div class="flex flex-col items-center">
+        <div class="step-dot ${cls}">${s.n<state.step?'✓':s.n}</div>
+        ${s.n<5?'<div class="step-line"></div>':''}
+      </div>
+      <div class="pt-1 pb-4"><p class="text-xs font-medium ${tc}">${s.label}</p></div>
+    </div>`;
+  }).join('');
+  document.getElementById('sb-parent').textContent = state.parentCID||'—';
+  document.getElementById('sb-cycle').textContent  = state.cycle?.label||'—';
+  document.getElementById('sb-cids').textContent   = state.selectedCIDs.length ? state.selectedCIDs.length+' selected' : '—';
+}
+
+// ════════════════════════════════ NAVIGATION ══════════════════════════════════
+function goTo(n) {
+  if (n===2 && !state.parentCID)           { shake('sec-1'); return; }
+  if (n===3 && !state.cycle)               { shake('sec-2'); return; }
+  if (n===4 && !state.selectedCIDs.length) { shake('sec-3'); return; }
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('sec-'+n).classList.add('active');
+  state.step = n;
+  renderSidebar();
+  if (n===2) renderCycles();
+  if (n===3) renderCIDList();
+  if (n===4) renderAdjBlocks();
+  if (n===5) renderPreview();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function shake(id) {
+  const el=document.getElementById(id);
+  el.style.animation='none'; el.offsetHeight;
+  el.style.animation='shake .3s ease';
+  setTimeout(()=>el.style.animation='',400);
+}
+
+// ════════════════════════════════ STEP 1 ═════════════════════════════════════
+function onParentChange() {
+  state.parentCID=document.getElementById('parent-cid').value;
+  state.cycle=null; state.selectedCIDs=[]; state.adjData={};
+  renderSidebar();
+}
+
+// ════════════════════════════════ STEP 2 — Cycles ════════════════════════════
+function renderCycles() {
+  const data=CID_DATA[state.parentCID]; if(!data) return;
+  document.getElementById('cycle-list').innerHTML = data.cycles.map(c=>`
+    <div class="cid-card ${state.cycle?.id===c.id?'selected':''}" onclick="selectCycle('${c.id}')">
+      <div class="cid-card-header">
+        <div class="chk ${state.cycle?.id===c.id?'on':''}"></div>
+        <div class="flex-1"><p class="text-sm font-medium">${c.label}</p><p class="text-xs text-slate-500 mono">${c.fiscal}</p></div>
+        <span class="badge badge-amber">Unbilled</span>
+      </div>
+    </div>`).join('');
+  document.getElementById('btn-2').disabled = !state.cycle;
+}
+function selectCycle(id) {
+  state.cycle=CID_DATA[state.parentCID].cycles.find(c=>c.id===id);
+  state.selectedCIDs=[]; state.adjData={};
+  document.getElementById('btn-2').disabled=false;
+  renderCycles();
+}
+
+// ════════════════════════════════ STEP 3 — CID list with all charges ═════════
+function renderCIDList() {
+  const data=CID_DATA[state.parentCID]; if(!data) return;
+  const cycDays=daysBetween(state.cycle.start,state.cycle.end);
+  document.getElementById('cid-list').innerHTML = data.children.map(c=>{
+    const sel=state.selectedCIDs.includes(c.id);
+    const svc=Math.round((c.mrc/30)*cycDays);
+    const tot=c.install+c.deviceCharge+svc;
+    return `
+    <div class="cid-card ${sel?'selected':''}">
+      <div class="cid-card-header" onclick="toggleCID('${c.id}')">
+        <div class="chk ${sel?'on':''}"></div>
+        <div class="flex-1">
+          <p class="text-sm font-medium">${c.id}</p>
+          <p class="text-xs text-slate-500">${c.label}</p>
+        </div>
+        <div class="text-right">
+          <p class="text-xs text-slate-500">Total charges</p>
+          <p class="mono text-sm font-semibold">NPR ${tot.toLocaleString()}</p>
+        </div>
+      </div>
+      <div class="cid-charges">
+        <div class="charge-cell">
+          <p class="label">Installation</p>
+          <p class="mono text-sm font-medium">NPR ${c.install.toLocaleString()}</p>
+          <p class="text-xs text-slate-600 mt-0.5">One-time</p>
+        </div>
+        <div class="charge-cell">
+          <p class="label">Device charge</p>
+          <p class="mono text-sm font-medium">NPR ${c.deviceCharge.toLocaleString()}</p>
+          <p class="text-xs text-slate-600 mt-0.5">${c.devices.length} device${c.devices.length>1?'s':''}</p>
+        </div>
+        <div class="charge-cell">
+          <p class="label">Service charge</p>
+          <p class="mono text-sm font-medium text-amber-400">NPR ${svc.toLocaleString()}</p>
+          <p class="text-xs text-slate-600 mt-0.5">NPR ${c.mrc.toLocaleString()}/mo · ${cycDays}d</p>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('btn-3').disabled=!state.selectedCIDs.length;
+}
+function toggleCID(id) {
+  const i=state.selectedCIDs.indexOf(id);
+  if(i>=0) state.selectedCIDs.splice(i,1); else state.selectedCIDs.push(id);
+  document.getElementById('btn-3').disabled=!state.selectedCIDs.length;
+  renderCIDList();
+}
+function selectAllCIDs() {
+  state.selectedCIDs=CID_DATA[state.parentCID].children.map(c=>c.id);
+  document.getElementById('btn-3').disabled=false; renderCIDList();
+}
+function clearAllCIDs() {
+  state.selectedCIDs=[]; document.getElementById('btn-3').disabled=true; renderCIDList();
+}
+
+// ════════════════════════════════ STEP 4 — Per-CID adj blocks ════════════════
+function initAdjData(cid) {
+  if (!state.adjData[cid]) state.adjData[cid]={};
+  ADJ_TYPES.forEach(t=>{
+    if(!state.adjData[cid][t.key]) {
+      state.adjData[cid][t.key]={
+        enabled:false,
+        dateRanges:[{id:drIdx++,start:'',end:''}],
+        devicePrices:{}, otcAmount:null, renewalMRC:null,
+        otherAmount:0, lfDiscType:'percent', lfDiscVal:0, reason:'',
+      };
+    }
+  });
+}
+
+function renderAdjBlocks() {
+  const data=CID_DATA[state.parentCID];
+  const cycDays=daysBetween(state.cycle.start,state.cycle.end);
+  state.selectedCIDs.forEach(cid=>initAdjData(cid));
+
+  document.getElementById('adj-blocks').innerHTML = state.selectedCIDs.map(cid=>{
+    const child=data.children.find(c=>c.id===cid); if(!child) return '';
+    const svc=Math.round((child.mrc/30)*cycDays);
+    const activeCount=ADJ_TYPES.filter(t=>state.adjData[cid]?.[t.key]?.enabled).length;
+    const typesHtml=ADJ_TYPES.map(t=>buildAccordion(cid,t,child,svc)).join('');
+
+    return `<div class="cid-adj-block">
+      <div class="cid-adj-block-hdr">
+        <div>
+          <span class="mono text-xs text-amber-400 font-medium">${cid}</span>
+          <span class="text-xs text-slate-500 ml-2">· ${child.label}</span>
+        </div>
+        <span class="${activeCount?'badge badge-amber':'text-xs text-slate-600'}">
+          ${activeCount?activeCount+' type'+(activeCount>1?'s':'')+' active':'No adjustments yet'}
+        </span>
+      </div>
+      <div class="cid-adj-block-body">
+        <!-- charge summary strip -->
+        <div class="grid grid-cols-3 gap-2 mb-4">
+          <div class="card-inner px-3 py-2 text-xs"><p class="text-slate-500 mb-0.5">Installation</p><p class="mono font-medium">NPR ${child.install.toLocaleString()}</p></div>
+          <div class="card-inner px-3 py-2 text-xs"><p class="text-slate-500 mb-0.5">Device</p><p class="mono font-medium">NPR ${child.deviceCharge.toLocaleString()}</p></div>
+          <div class="card-inner px-3 py-2 text-xs"><p class="text-slate-500 mb-0.5">Service (this cycle)</p><p class="mono font-medium text-amber-400">NPR ${svc.toLocaleString()}</p></div>
+        </div>
+        ${typesHtml}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function buildAccordion(cid, t, child, svcCharge) {
+  const d=state.adjData[cid][t.key];
+  const on=d.enabled;
+  const cycStart=state.cycle.start, cycEnd=state.cycle.end;
+  let body='';
+
+  if (t.key==='outage'||t.key==='unused') {
+    const hasOvlp=hasOverlap(cid,d.dateRanges,t.key);
+    const totalDays=d.dateRanges.reduce((s,r)=>s+(r.start&&r.end?daysBetween(r.start,r.end):0),0);
+    const adj=parseFloat((child.mrc/30*totalDays).toFixed(2));
+    const rangeRows=d.dateRanges.map(r=>`
+      <div class="dr-row">
+        <div><label class="label">Start</label>
+          <input class="inp" type="date" value="${r.start}" min="${cycStart}" max="${cycEnd}"
+            onchange="updateDR('${cid}','${t.key}',${r.id},'start',this.value)"/></div>
+        <div><label class="label">End</label>
+          <input class="inp" type="date" value="${r.end}" min="${cycStart}" max="${cycEnd}"
+            onchange="updateDR('${cid}','${t.key}',${r.id},'end',this.value)"/></div>
+        <button class="rm-btn" onclick="removeDR('${cid}','${t.key}',${r.id})"
+          ${d.dateRanges.length<=1?'disabled':''}>✕</button>
+      </div>`).join('');
+    body=`
+      ${hasOvlp?`<div class="ovlp-warn mb-3"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#f87171" stroke-width="1.2"/><path d="M8 5v4M8 11v.01" stroke="#f87171" stroke-width="1.4" stroke-linecap="round"/></svg>Overlap with existing ${t.key} on this CID</div>`:''}
+      <div class="flex flex-col gap-2 mb-2">${rangeRows}</div>
+      <div class="flex items-center justify-between mb-3">
+        <button class="btn-secondary text-xs py-1 px-2.5 flex items-center gap-1" onclick="addDR('${cid}','${t.key}')">+ Add range</button>
+        <div class="flex items-center gap-3 text-xs">
+          <span class="text-slate-500">${totalDays} day${totalDays!==1?'s':''}</span>
+          <span class="mono font-medium ${adj>svcCharge?'text-red-400':'text-green-400'}">− NPR ${fmtAmt(adj)}</span>
+          ${adj>svcCharge?'<span class="badge badge-red">Exceeds service cap</span>':''}
+        </div>
+      </div>`;
+  }
+  else if (t.key==='device') {
+    const devRows=child.devices.map((dev,i)=>{
+      if(d.devicePrices[i]===undefined) d.devicePrices[i]=dev.price;
+      const diff=dev.price-d.devicePrices[i];
+      return `<div class="flex items-center gap-3 py-2 border-b border-slate-800/40 last:border-0 text-sm">
+        <span class="flex-1">${dev.name}</span>
+        <span class="mono text-xs text-slate-500">NPR ${dev.price.toLocaleString()}</span>
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="#5c6070" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <input class="inp mono text-right w-28" type="number" value="${d.devicePrices[i]}" min="0" max="${dev.price}"
+          oninput="setDevPrice('${cid}',${i},this.value)" style="padding:6px 10px"/>
+        <span class="w-24 text-right text-xs ${diff>0?'text-green-400':'text-slate-500'}">${diff>0?'−&nbsp;NPR&nbsp;'+diff.toLocaleString():'no change'}</span>
+      </div>`;
+    }).join('');
+    const totalDevAdj=child.devices.reduce((s,dev,i)=>s+(dev.price-(d.devicePrices[i]??dev.price)),0);
+    body=`<div class="card-inner px-3 py-1 mb-2">${devRows}</div>
+      <div class="flex justify-end text-xs gap-2 items-center">
+        <span class="text-slate-500">Total device adjustment:</span>
+        <span class="mono font-medium ${totalDevAdj>0?'text-green-400':'text-slate-500'}">NPR ${totalDevAdj.toLocaleString()}</span>
+      </div>`;
+  }
+  else if (t.key==='otc') {
+    if(d.otcAmount===null) d.otcAmount=child.install;
+    const saving=Math.max(0,child.install-d.otcAmount);
+    body=`<div class="grid grid-cols-2 gap-3 mb-2">
+      <div><label class="label">Original charge</label><div class="amt-disp"><span class="mono">NPR ${child.install.toLocaleString()}</span></div></div>
+      <div><label class="label">Adjusted (≤ NPR ${child.install.toLocaleString()})</label>
+        <input class="inp mono" type="number" value="${d.otcAmount}" min="0" max="${child.install}" oninput="setOTC('${cid}',this.value)"/></div>
+    </div>
+    <p class="text-xs text-green-400">Saving: NPR ${saving.toLocaleString()}</p>`;
+  }
+  else if (t.key==='renewal') {
+    if(d.renewalMRC===null) d.renewalMRC=child.mrc;
+    const diff=child.mrc-d.renewalMRC;
+    body=`<div class="grid grid-cols-3 gap-3 mb-2">
+      <div><label class="label">Current MRC</label><div class="amt-disp"><span class="mono text-slate-400">NPR ${child.mrc.toLocaleString()}</span></div></div>
+      <div><label class="label">New MRC</label><input class="inp mono" type="number" value="${d.renewalMRC}" oninput="setRenewal('${cid}',this.value)"/></div>
+      <div><label class="label">New devices?</label>
+        <select class="inp"><option value="no">No new devices</option><option value="yes">Yes, new install</option></select></div>
+    </div>
+    <p class="text-xs ${diff>0?'text-green-400':'text-slate-500'}">MRC change: ${diff>0?'−':'+'}NPR ${Math.abs(diff).toLocaleString()}</p>`;
+  }
+  else if (t.key==='latefee') {
+    const fee=Math.round(child.mrc*0.05);
+    const adjFee=d.lfDiscType==='percent'?Math.round(fee*(1-d.lfDiscVal/100)):Math.max(0,fee-d.lfDiscVal);
+    body=`<div class="p-2.5 rounded-lg bg-red-500/5 border border-red-500/15 text-xs text-red-400/80 mb-3">Late fee applies after invoice generation.</div>
+    <div class="grid grid-cols-2 gap-3 mb-3">
+      <div><label class="label">Invoice total</label><div class="amt-disp"><span class="mono">NPR ${child.mrc.toLocaleString()}</span></div></div>
+      <div><label class="label">Late fee (5%)</label><div class="amt-disp"><span class="mono text-red-400">NPR ${fee.toLocaleString()}</span></div></div>
+    </div>
+    <div class="grid grid-cols-2 gap-3 mb-2">
+      <div><label class="label">Discount type</label>
+        <select class="inp" onchange="setLFType('${cid}',this.value)">
+          <option value="percent" ${d.lfDiscType==='percent'?'selected':''}>Percentage (%)</option>
+          <option value="flat"    ${d.lfDiscType==='flat'   ?'selected':''}>Flat (NPR)</option>
+        </select></div>
+      <div><label class="label">Value</label>
+        <input class="inp" type="number" value="${d.lfDiscVal}" min="0" oninput="setLFVal('${cid}',this.value)"/></div>
+    </div>
+    <div class="amt-disp"><span class="text-sm text-slate-400">Adjusted late fee</span>
+      <span class="mono font-medium text-green-400">NPR ${adjFee.toLocaleString()}</span></div>`;
+  }
+  else if (t.key==='other') {
+    body=`<div class="grid grid-cols-2 gap-3">
+      <div><label class="label">Amount (NPR)</label>
+        <input class="inp mono" type="number" value="${d.otherAmount}" min="0" oninput="setOther('${cid}',this.value)"/></div>
+      <div><label class="label">Description</label>
+        <input class="inp" type="text" placeholder="What is this for?"/></div>
+    </div>`;
+  }
+
+  // Reason selector (shared)
+  const opts=(REASONS[t.key]||[]).map(r=>`<option value="${r.id}" ${d.reason==r.id?'selected':''}>${r.t}</option>`).join('');
+  body+=`<div class="mt-3"><label class="label">Reason</label>
+    <select class="inp" onchange="setReason('${cid}','${t.key}',this.value)">
+      <option value="">— Select reason —</option>${opts}
+    </select></div>`;
+
+  return `<div class="att ${on?'on':''}">
+    <div class="att-hdr" onclick="toggleAdj('${cid}','${t.key}')">
+      <div class="tog ${on?'on':''}"><div class="tog-knob"></div></div>
+      <span style="font-size:16px;line-height:1">${t.icon}</span>
+      <div class="flex-1 min-w-0">
+        <span class="text-sm font-medium">${t.label}</span>
+        <span class="text-xs text-slate-500 ml-2">${t.desc}</span>
+      </div>
+      ${on?`<span class="badge ${t.badge} flex-shrink-0">active</span>`:''}
+    </div>
+    ${on?`<div class="att-body">${body}</div>`:''}
+  </div>`;
+}
+
+function toggleAdj(cid,key) {
+  state.adjData[cid][key].enabled=!state.adjData[cid][key].enabled;
+  renderAdjBlocks();
+}
+
+// ── Date ranges ───────────────────────────────────────────────────────────────
+function addDR(cid,key)        { state.adjData[cid][key].dateRanges.push({id:drIdx++,start:'',end:''}); renderAdjBlocks(); }
+function removeDR(cid,key,id)  {
+  const arr=state.adjData[cid][key].dateRanges;
+  if(arr.length<=1) return;
+  state.adjData[cid][key].dateRanges=arr.filter(r=>r.id!==id); renderAdjBlocks();
+}
+function updateDR(cid,key,id,field,val) {
+  const r=state.adjData[cid][key].dateRanges.find(x=>x.id===id);
+  if(r){r[field]=val; renderAdjBlocks();}
+}
+
+// ── Field setters (no full re-render for typing) ──────────────────────────────
+function setDevPrice(cid,idx,val) {
+  const child=CID_DATA[state.parentCID].children.find(c=>c.id===cid);
+  state.adjData[cid]['device'].devicePrices[idx]=Math.min(+val,child.devices[idx].price);
+}
+function setOTC(cid,val)     { const ch=CID_DATA[state.parentCID].children.find(c=>c.id===cid); state.adjData[cid]['otc'].otcAmount=Math.min(+val,ch.install); }
+function setRenewal(cid,val) { state.adjData[cid]['renewal'].renewalMRC=+val; }
+function setOther(cid,val)   { state.adjData[cid]['other'].otherAmount=+val; }
+function setLFType(cid,val)  { state.adjData[cid]['latefee'].lfDiscType=val; renderAdjBlocks(); }
+function setLFVal(cid,val)   { state.adjData[cid]['latefee'].lfDiscVal=+val; renderAdjBlocks(); }
+function setReason(cid,key,val) { state.adjData[cid][key].reason=val; }
+
+function hasOverlap(cid,ranges,key) {
+  return ranges.some(r=>{
+    if(!r.start||!r.end) return false;
+    return EXISTING_ADJ.some(ea=>ea.cid===cid&&ea.type===key&&!(r.end<ea.start||r.start>ea.end));
+  });
+}
+
+// ════════════════════════════════ STEP 5 — Preview ═══════════════════════════
+function renderPreview() {
+  const data=CID_DATA[state.parentCID];
+  const cycDays=daysBetween(state.cycle.start,state.cycle.end);
+  const remarks=document.getElementById('adj-remarks')?.value||'';
+  let grand=0, cidHtml='';
+
+  state.selectedCIDs.forEach(cid=>{
+    const child=data.children.find(c=>c.id===cid); if(!child) return;
+    const svc=Math.round((child.mrc/30)*cycDays);
+    const adj=state.adjData[cid]||{};
+    let cidTotal=0, adjRows='';
+
+    ADJ_TYPES.forEach(t=>{
+      const d=adj[t.key]; if(!d?.enabled) return;
+      let amt=0, detail='';
+      if(t.key==='outage'||t.key==='unused'){
+        const days=d.dateRanges.reduce((s,r)=>s+(r.start&&r.end?daysBetween(r.start,r.end):0),0);
+        amt=parseFloat((child.mrc/30*days).toFixed(2));
+        detail=d.dateRanges.filter(r=>r.start&&r.end).map(r=>`${r.start} – ${r.end}`).join(', ')||'No dates set';
+      } else if(t.key==='device'){
+        amt=child.devices.reduce((s,dev,i)=>s+(dev.price-(d.devicePrices[i]??dev.price)),0);
+        detail='Device price revision';
+      } else if(t.key==='otc'){
+        amt=child.install-(d.otcAmount??child.install);
+        detail=`Install NPR ${child.install.toLocaleString()} → NPR ${(d.otcAmount??child.install).toLocaleString()}`;
+      } else if(t.key==='latefee'){
+        const fee=Math.round(child.mrc*.05);
+        amt=d.lfDiscType==='percent'?Math.round(fee*d.lfDiscVal/100):Math.min(d.lfDiscVal,fee);
+        detail=`Late fee discount ${d.lfDiscType==='percent'?d.lfDiscVal+'%':'NPR '+d.lfDiscVal}`;
+      } else if(t.key==='renewal'){
+        const diff=child.mrc-(d.renewalMRC??child.mrc);
+        amt=diff>0?diff:0;
+        detail=`MRC NPR ${child.mrc.toLocaleString()} → NPR ${(d.renewalMRC??child.mrc).toLocaleString()}`;
+      } else if(t.key==='other'){
+        amt=d.otherAmount||0;
+        detail='Miscellaneous';
+      }
+      const overCap=(t.key==='outage'||t.key==='unused')&&amt>svc;
+      cidTotal+=amt;
+      adjRows+=`<div class="prev-adj-row">
+        <div>
+          <span class="badge ${t.badge} mb-1">${t.icon} ${t.label}</span>
+          <p class="text-xs text-slate-500 mt-1">${detail}</p>
+        </div>
+        <div class="text-right flex-shrink-0">
+          <p class="mono text-sm font-medium ${overCap?'text-red-400':'text-green-400'}">− NPR ${fmtAmt(amt)}</p>
+          ${overCap?'<span class="badge badge-red mt-1">Exceeds svc cap</span>':''}
+        </div>
+      </div>`;
+    });
+
+    if(!adjRows) adjRows=`<div class="prev-adj-row"><p class="text-xs text-slate-600 italic">No adjustments configured for this CID</p></div>`;
+    grand+=cidTotal;
+
+    const totalOriginal=child.install+child.deviceCharge+svc;
+    cidHtml+=`<div class="prev-cid">
+      <div class="prev-cid-hdr">
+        <div>
+          <span class="mono text-xs font-medium text-amber-400">${cid}</span>
+          <span class="text-xs text-slate-500 ml-2">· ${child.label}</span>
+        </div>
+        <span class="mono text-sm font-medium">− NPR ${fmtAmt(cidTotal)}</span>
+      </div>
+      ${adjRows}
+      <div class="prev-tot">
+        <span class="text-xs text-slate-400">Net payable (original NPR ${totalOriginal.toLocaleString()})</span>
+        <span class="mono text-sm font-semibold text-white">NPR ${Math.max(0,totalOriginal-cidTotal).toLocaleString()}</span>
+      </div>
+    </div>`;
+  });
+
+  const anyOverlap=state.selectedCIDs.some(cid=>
+    ADJ_TYPES.some(t=>{
+      if(t.key!=='outage'&&t.key!=='unused') return false;
+      const d=state.adjData[cid]?.[t.key];
+      return d?.enabled&&hasOverlap(cid,d.dateRanges,t.key);
+    }));
+
+  document.getElementById('preview-content').innerHTML=`
+    <div class="card-inner p-4 mb-4">
+      <div class="grid grid-cols-3 gap-4 text-sm">
+        <div><p class="label">Parent CID</p><p class="mono text-amber-400">${state.parentCID}</p></div>
+        <div><p class="label">Billing cycle</p><p>${state.cycle.label}</p></div>
+        <div><p class="label">CIDs</p><p>${state.selectedCIDs.length} branch${state.selectedCIDs.length>1?'es':''}</p></div>
+        ${remarks?`<div class="col-span-3"><p class="label">Remarks</p><p class="text-slate-400">${remarks}</p></div>`:''}
+      </div>
+    </div>
+    <p class="label mb-2">Per-CID breakdown</p>
+    ${cidHtml}
+    <div class="card-inner p-4 flex justify-between items-center mb-4">
+      <span class="text-sm font-medium">Grand total adjustment</span>
+      <span class="mono text-lg font-semibold text-amber-400">NPR ${fmtAmt(grand)}</span>
+    </div>
+    ${anyOverlap?`<div class="ovlp-warn mb-3"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#f87171" stroke-width="1.2"/><path d="M8 5v4M8 11v.01" stroke="#f87171" stroke-width="1.4" stroke-linecap="round"/></svg>Date overlap detected on one or more CIDs — please review.</div>`:''}
+    <div class="flex items-center gap-2 text-xs text-slate-500">
+      <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#64748b" stroke-width="1.2"/><path d="M8 7v4M8 5.5v.5" stroke="#64748b" stroke-width="1.4" stroke-linecap="round"/></svg>
+      No changes are applied until the adjustment is approved.
+    </div>`;
+}
+
+// ════════════════════════════════ SUBMIT ═════════════════════════════════════
+function submitAdjustment() {
+  const ref='ADJ-'+Date.now().toString(36).toUpperCase();
+  const approvers=['ujwalish.khadgi','suraj.bista.mc','bikash.bhattarai'];
+  const approver=approvers[Math.floor(Math.random()*approvers.length)];
+  document.getElementById('sub-ref').textContent=ref;
+  document.getElementById('sub-approver').textContent=approver;
+  const types=[...new Set(state.selectedCIDs.flatMap(cid=>ADJ_TYPES.filter(t=>state.adjData[cid]?.[t.key]?.enabled).map(t=>t.label)))];
+  document.getElementById('sub-summary').innerHTML=`
+    <div class="grid grid-cols-2 gap-3 text-xs">
+      <div><p class="label">Parent CID</p><p class="mono text-amber-400">${state.parentCID}</p></div>
+      <div><p class="label">Cycle</p><p>${state.cycle.label}</p></div>
+      <div><p class="label">CIDs</p><p>${state.selectedCIDs.join(', ')}</p></div>
+      <div><p class="label">Adjustment types</p><p>${types.join(', ')||'—'}</p></div>
+    </div>`;
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('sec-6').classList.add('active');
+  state.step=6; renderSidebar();
+}
+
+function resetForm() {
+  state={step:1,parentCID:'',cycle:null,selectedCIDs:[],adjData:{}}; drIdx=0;
+  document.getElementById('parent-cid').value='';
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('sec-1').classList.add('active');
+  renderSidebar();
+}
+
+// ════════════════════════════════ UTILS ═══════════════════════════════════════
+function daysBetween(a,b) { if(!a||!b) return 0; return Math.max(0,Math.round((new Date(b)-new Date(a))/86400000)+1); }
+function fmtAmt(n)        { return (+n).toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function handleFile(input,labelId) { const f=input.files[0]; if(f) document.getElementById(labelId).textContent=f.name+' ('+(f.size/1024).toFixed(1)+' KB)'; }
+
+// Init
+renderSidebar();
+document.head.insertAdjacentHTML('beforeend','<style>@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}</style>');
+</script>
+</body>
+</html>
