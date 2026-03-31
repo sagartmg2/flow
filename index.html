@@ -4,372 +4,505 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Adjustment Request — Billing System</title>
-<link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700&family=Source+Code+Pro:wght@400;500&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
 <style>
-:root {
+:root{
   --primary:#3c8dbc;--primary-dark:#367fa9;--primary-light:#d9eaf4;--primary-xlight:#eaf4fb;
-  --success:#00a65a;--warning:#f39c12;--danger:#dd4b39;--info:#00c0ef;
-  --default:#d2d6de;--bg:#ecf0f5;--white:#ffffff;--text:#333333;--text-muted:#777777;
-  --border:#d2d6de;--box-shadow:0 1px 1px rgba(0,0,0,.1);
+  --success:#00a65a;--warning:#e08e0b;--warn-bg:#fcf8e3;--warn-border:#f0e0a0;
+  --danger:#c0392b;--danger-bg:#fdf2f2;--danger-border:#f5c6c6;
+  --info:#0098c1;--info-bg:#e8f5fb;
+  --bg:#ecf0f5;--white:#fff;--text:#2c3e50;--text-muted:#6b7280;
+  --border:#dde2e8;--border-light:#edf0f3;
+  --shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.05);
+  --shadow-md:0 4px 12px rgba(0,0,0,.1);
+  --radius:4px;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;color:var(--text);background:var(--bg);min-height:100vh;}
-.mono{font-family:'Source Code Pro',monospace;}
-.wrapper{padding:15px;max-width:960px;margin:0 auto;}
-.main-header{background:var(--primary-dark);color:#fff;padding:0 15px;height:50px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 3px rgba(0,0,0,.25);margin-bottom:15px;}
-.main-header .logo{width:34px;height:34px;background:rgba(255,255,255,.15);border-radius:4px;display:flex;align-items:center;justify-content:center;}
-.main-header h1{font-size:18px;font-weight:700;}
-.main-header .bc{margin-left:auto;font-size:12px;color:rgba(255,255,255,.7);}
-.main-header .bc span{color:#fff;}
-.content-header{padding:10px 0 15px;display:flex;align-items:baseline;justify-content:space-between;}
-.content-header h2{font-size:22px;font-weight:400;}
-.breadcrumb{list-style:none;display:flex;gap:4px;font-size:12px;color:var(--text-muted);}
-.breadcrumb li+li::before{content:'>';margin-right:4px;}
-.breadcrumb li.active{color:var(--text);}
-/* Stepper */
-.steps-bar{background:var(--white);box-shadow:var(--box-shadow);border-radius:3px;margin-bottom:20px;display:flex;overflow:hidden;}
-.step-item{flex:1;display:flex;align-items:center;padding:12px 14px 12px 20px;position:relative;font-size:13px;font-weight:600;color:var(--text-muted);background:var(--white);border-right:1px solid var(--border);transition:background .2s;}
-.step-item:last-child{border-right:none;flex:0 0 auto;padding-right:20px;}
-.step-item::after{content:'';position:absolute;right:-10px;top:0;bottom:0;width:20px;background:var(--white);clip-path:polygon(0 0,65% 50%,0 100%);z-index:2;transition:background .2s;}
-.step-item:last-child::after{display:none;}
-.step-item.done{background:#f0f7e6;color:var(--success);}
-.step-item.done::after{background:#f0f7e6;}
-.step-item.active{background:var(--primary-xlight);color:var(--primary);}
-.step-item.active::after{background:var(--primary-xlight);}
-.step-num{width:22px;height:22px;border-radius:50%;background:var(--default);color:var(--text-muted);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-right:8px;transition:all .2s;}
-.step-item.done .step-num{background:var(--success);color:#fff;}
-.step-item.active .step-num{background:var(--primary);color:#fff;}
-.ctx-bar{background:var(--primary);color:rgba(255,255,255,.9);padding:6px 15px;font-size:12px;display:flex;gap:20px;border-radius:0 0 3px 3px;margin-top:-20px;margin-bottom:20px;}
-.ctx-bar .cv{color:#fff;font-weight:600;font-family:'Source Code Pro',monospace;}
-/* Box */
-.box{background:var(--white);border-top:3px solid var(--default);border-radius:3px;box-shadow:var(--box-shadow);margin-bottom:20px;}
-.box.box-primary{border-top-color:var(--primary);}
-.box.box-success{border-top-color:var(--success);}
-.box-header{padding:10px 15px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);}
-.box-title{font-size:16px;font-weight:600;display:flex;align-items:center;gap:8px;}
-.step-badge{background:var(--primary);color:#fff;font-size:11px;font-weight:700;padding:2px 7px;border-radius:2px;font-family:'Source Code Pro',monospace;}
-.step-badge.success{background:var(--success);}
-.box-body{padding:15px;}
-.box-footer{padding:10px 15px;border-top:1px solid var(--border);background:#f7f7f7;display:flex;align-items:center;justify-content:space-between;border-radius:0 0 3px 3px;}
-/* Forms */
-.form-group{margin-bottom:14px;}
-.form-group label{display:block;font-weight:600;margin-bottom:5px;font-size:13px;color:#555;}
-.opt{font-weight:400;color:#aaa;font-size:11px;margin-left:3px;}
-.form-control{display:block;width:100%;padding:6px 10px;font-size:14px;font-family:'Source Sans Pro',sans-serif;color:var(--text);background:var(--white);border:1px solid var(--default);border-radius:3px;outline:none;transition:border-color .2s,box-shadow .2s;-webkit-appearance:none;}
-.form-control:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(60,141,188,.15);}
-.form-control:disabled{background:#f4f4f4;cursor:not-allowed;opacity:.8;}
-select.form-control{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23777'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 9px center;padding-right:28px;}
-input[type="date"].form-control::-webkit-calendar-picker-indicator{cursor:pointer;opacity:.5;}
-/* Buttons */
-.btn{display:inline-flex;align-items:center;gap:5px;padding:6px 14px;font-size:14px;font-weight:600;font-family:'Source Sans Pro',sans-serif;border:1px solid transparent;border-radius:3px;cursor:pointer;transition:all .15s;line-height:1.4;}
-.btn:disabled{opacity:.5;cursor:not-allowed;}
+body{font-family:'IBM Plex Sans','Helvetica Neue',sans-serif;font-size:14px;color:var(--text);background:var(--bg);min-height:100vh;}
+.mono{font-family:'IBM Plex Mono',monospace;}
+
+/* HEADER */
+.app-header{background:var(--primary-dark);color:#fff;height:52px;display:flex;align-items:center;padding:0 20px;gap:14px;box-shadow:0 2px 6px rgba(0,0,0,.2);position:sticky;top:0;z-index:100;}
+.app-header .logo{width:36px;height:36px;background:rgba(255,255,255,.15);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.app-header h1{font-size:17px;font-weight:600;letter-spacing:-.2px;}
+.app-header .breadcrumb{margin-left:auto;font-size:12px;color:rgba(255,255,255,.6);display:flex;align-items:center;gap:5px;}
+.app-header .breadcrumb span{color:#fff;font-weight:500;}
+
+/* LAYOUT */
+.page{max-width:1000px;margin:0 auto;padding:20px 16px;}
+.page-title{font-size:21px;font-weight:600;letter-spacing:-.3px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;}
+.page-title small{font-size:12px;font-weight:400;color:var(--text-muted);}
+
+/* STEPPER */
+.stepper{display:flex;background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:18px;overflow:hidden;}
+.step{flex:1;display:flex;align-items:center;gap:9px;padding:11px 14px;font-size:12px;font-weight:600;color:var(--text-muted);letter-spacing:.02em;position:relative;border-right:1px solid var(--border);}
+.step:last-child{border-right:none;}
+.step-n{width:22px;height:22px;border-radius:50%;background:var(--border);color:#888;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.step.done{color:var(--success);}
+.step.done .step-n{background:var(--success);color:#fff;}
+.step.active{color:var(--primary);}
+.step.active .step-n{background:var(--primary);color:#fff;}
+.step-label{line-height:1.2;}
+.step-sub{font-weight:400;color:#aaa;font-size:11px;display:block;margin-top:1px;}
+
+/* CONTEXT BAR */
+.ctx{background:var(--primary);color:rgba(255,255,255,.9);padding:8px 14px;font-size:12px;display:flex;flex-wrap:wrap;gap:16px;border-radius:0 0 4px 4px;margin-bottom:18px;}
+.ctx-item .lbl{opacity:.7;margin-right:4px;}
+.ctx-item .val{font-family:'IBM Plex Mono',monospace;font-weight:600;color:#fff;}
+
+/* CARD */
+.card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:16px;border-top:3px solid transparent;}
+.card.c-primary{border-top-color:var(--primary);}
+.card.c-success{border-top-color:var(--success);}
+.card-hdr{padding:12px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border-light);}
+.card-title{font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px;}
+.step-pill{background:var(--primary);color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:2px;letter-spacing:.05em;font-family:'IBM Plex Mono',monospace;}
+.step-pill.success{background:var(--success);}
+.card-body{padding:16px;}
+.card-foot{padding:10px 16px;border-top:1px solid var(--border-light);background:#fafbfc;display:flex;align-items:center;justify-content:space-between;border-radius:0 0 4px 4px;}
+
+/* SEARCH BAR (step 1) */
+.search-wrap{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.search-wrap.three{grid-template-columns:1fr 1fr 1fr;}
+.search-row{display:flex;gap:8px;margin-bottom:14px;}
+.search-input-wrap{position:relative;flex:1;}
+.search-input-wrap .icon{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:#aaa;pointer-events:none;}
+.search-input-wrap input{padding-left:32px;}
+.search-results{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-top:2px;}
+.sr-item{padding:10px 14px;cursor:pointer;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border-light);transition:background .15s;}
+.sr-item:last-child{border-bottom:none;}
+.sr-item:hover,.sr-item.active{background:var(--primary-xlight);}
+.sr-item.active{border-left:3px solid var(--primary);}
+.sr-cid{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:var(--primary);}
+.sr-meta{font-size:12px;color:var(--text-muted);}
+.sr-uname{font-size:11px;font-family:'IBM Plex Mono',monospace;color:#666;background:#f3f4f6;border-radius:2px;padding:1px 5px;}
+.sr-badge{margin-left:auto;font-size:10px;background:var(--primary-light);color:var(--primary-dark);padding:2px 6px;border-radius:2px;font-weight:600;}
+
+/* FORMS */
+.fgrp{margin-bottom:13px;}
+.fgrp label{display:block;font-size:12px;font-weight:600;color:#444;margin-bottom:5px;letter-spacing:.01em;}
+.fgrp label .opt{font-weight:400;color:#aaa;margin-left:4px;}
+.form-control{display:block;width:100%;padding:7px 10px;font-size:13px;font-family:'IBM Plex Sans',sans-serif;color:var(--text);background:var(--white);border:1px solid var(--border);border-radius:var(--radius);outline:none;transition:border-color .15s,box-shadow .15s;}
+.form-control:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(60,141,188,.12);}
+.form-control:disabled{background:#f4f4f4;opacity:.7;cursor:not-allowed;}
+select.form-control{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23888'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 9px center;padding-right:28px;-webkit-appearance:none;}
+input[type=number].form-control{font-family:'IBM Plex Mono',monospace;}
+.row{display:flex;gap:12px;flex-wrap:wrap;}
+.col2{flex:1 1 calc(50% - 6px);min-width:160px;}
+.col3{flex:1 1 calc(33.33% - 8px);min-width:130px;}
+.col4{flex:1 1 calc(25% - 9px);min-width:110px;}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 15px;font-size:13px;font-weight:600;font-family:'IBM Plex Sans',sans-serif;border:1px solid transparent;border-radius:var(--radius);cursor:pointer;transition:all .15s;line-height:1.3;}
+.btn:disabled{opacity:.45;cursor:not-allowed;}
 .btn-primary{background:var(--primary);border-color:var(--primary-dark);color:#fff;}
 .btn-primary:hover:not(:disabled){background:var(--primary-dark);}
-.btn-default{background:#f4f4f4;border-color:#ddd;color:#333;}
-.btn-default:hover:not(:disabled){background:#e7e7e7;}
+.btn-default{background:#f4f4f4;border-color:#d0d5dd;color:var(--text);}
+.btn-default:hover:not(:disabled){background:#e8e8e8;}
 .btn-success{background:var(--success);border-color:#008d4c;color:#fff;}
 .btn-success:hover:not(:disabled){background:#008d4c;}
-.btn-warning{background:var(--warning);border-color:#e08e0b;color:#fff;}
-.btn-xs{padding:2px 8px;font-size:12px;}
-.btn-sm{padding:4px 10px;font-size:13px;}
-/* Labels */
-.label,.badge{display:inline-flex;align-items:center;font-size:11px;font-weight:600;padding:2px 7px;border-radius:2px;color:#fff;}
-.label-primary,.badge-primary{background:var(--primary);}
-.label-success,.badge-success{background:var(--success);}
-.label-warning,.badge-warning{background:var(--warning);}
-.label-danger,.badge-danger{background:var(--danger);}
-.label-info,.badge-info{background:var(--info);}
-.label-default,.badge-default{background:#777;}
-.badge-violet{background:#9b59b6;}
-.badge-teal{background:#1abc9c;}
-/* Info-box */
-.info-box{display:flex;align-items:stretch;background:var(--white);border-radius:3px;box-shadow:var(--box-shadow);min-height:60px;margin-bottom:10px;cursor:pointer;border:2px solid transparent;transition:all .2s;}
-.info-box:hover{border-color:var(--primary-light);}
-.info-box.selected{border-color:var(--primary);background:var(--primary-xlight);}
-.info-box-icon{width:60px;display:flex;align-items:center;justify-content:center;background:var(--primary);color:#fff;font-size:18px;border-radius:1px 0 0 1px;flex-shrink:0;}
-.info-box.selected .info-box-icon{background:var(--primary-dark);}
-.info-box-content{padding:8px 12px;flex:1;}
-.info-box-text{font-size:13px;font-weight:600;}
-.info-box-number{font-size:12px;color:var(--text-muted);font-family:'Source Code Pro',monospace;}
-/* CID card */
-.cid-card{background:var(--white);border:2px solid var(--border);border-radius:3px;box-shadow:var(--box-shadow);margin-bottom:10px;transition:all .2s;}
-.cid-card:hover{border-color:var(--primary-light);}
-.cid-card.selected{border-color:var(--primary);box-shadow:0 0 0 1px var(--primary);}
-.cid-card-header{padding:10px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);cursor:pointer;}
-.cid-card.selected .cid-card-header{background:var(--primary-xlight);}
-.cid-charges{display:grid;grid-template-columns:1fr 1fr 1fr;}
-.charge-cell{padding:8px 14px;border-right:1px solid var(--border);}
-.charge-cell:last-child{border-right:none;}
-.charge-lbl{font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px;}
-.charge-val{font-family:'Source Code Pro',monospace;font-size:13px;font-weight:500;}
-.charge-sub{font-size:11px;color:#aaa;margin-top:1px;}
-/* iCheck */
-.icheck{width:18px;height:18px;border:2px solid var(--default);border-radius:2px;background:var(--white);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;}
+.btn-danger{background:var(--danger);border-color:#a93226;color:#fff;}
+.btn-xs{padding:3px 8px;font-size:11px;}
+.btn-sm{padding:5px 11px;font-size:12px;}
+.btn-icon{width:28px;height:28px;padding:0;justify-content:center;font-size:13px;}
+
+/* LABELS / BADGES */
+.badge{display:inline-flex;align-items:center;font-size:10px;font-weight:700;padding:2px 7px;border-radius:2px;letter-spacing:.04em;text-transform:uppercase;}
+.b-primary{background:var(--primary);color:#fff;}
+.b-success{background:var(--success);color:#fff;}
+.b-warning{background:var(--warning);color:#fff;}
+.b-danger{background:var(--danger);color:#fff;}
+.b-info{background:var(--info);color:#fff;}
+.b-default{background:#888;color:#fff;}
+.b-violet{background:#8e44ad;color:#fff;}
+.b-teal{background:#16a085;color:#fff;}
+.b-gray{background:#d1d5db;color:#555;}
+
+/* CYCLE CARDS */
+.cycle-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;}
+.cycle-card{border:2px solid var(--border);border-radius:var(--radius);padding:12px 14px;cursor:pointer;transition:all .18s;background:var(--white);}
+.cycle-card:hover{border-color:var(--primary-light);}
+.cycle-card.sel{border-color:var(--primary);background:var(--primary-xlight);}
+.cycle-card-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.cycle-dates{font-size:13px;font-weight:600;}
+.cycle-meta{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px;}
+.cycle-note{font-size:11px;color:var(--text-muted);margin-top:6px;}
+
+/* ICHECK */
+.icheck{width:17px;height:17px;border:2px solid var(--border);border-radius:3px;background:var(--white);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .13s;}
 .icheck.on{background:var(--primary);border-color:var(--primary);}
-.icheck.on::after{content:'';width:10px;height:6px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg) translateY(-1px);display:block;}
-/* Toggle */
-.toggle{width:40px;height:20px;border-radius:10px;background:#ccc;border:none;position:relative;transition:background .2s;flex-shrink:0;}
+.icheck.on::after{content:'';width:9px;height:5px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg) translateY(-1px);}
+
+/* TOGGLE */
+.toggle{width:38px;height:20px;border-radius:10px;background:#ccc;border:none;cursor:pointer;position:relative;transition:background .2s;flex-shrink:0;}
 .toggle.on{background:var(--primary);}
-.toggle-knob{position:absolute;width:16px;height:16px;border-radius:50%;background:#fff;top:2px;left:2px;transition:left .2s;box-shadow:0 1px 2px rgba(0,0,0,.2);}
-.toggle.on .toggle-knob{left:22px;}
-/* Accordion */
-.adj-accordion{border:1px solid var(--border);border-radius:3px;margin-bottom:8px;overflow:hidden;transition:border-color .2s;}
-.adj-accordion.active{border-color:var(--primary);}
-.adj-accordion-hdr{padding:10px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;background:#f7f7f7;transition:background .15s;}
-.adj-accordion.active .adj-accordion-hdr{background:var(--primary-xlight);}
-.adj-accordion-hdr:hover{background:#f0f0f0;}
-.adj-accordion.active .adj-accordion-hdr:hover{background:#daeef8;}
-.adj-accordion-body{padding:14px;background:var(--white);border-top:1px solid var(--border);}
-/* CID adj block */
-.cid-adj-block{margin-bottom:18px;}
-.cid-adj-block-hdr{background:var(--primary);color:#fff;padding:8px 14px;border-radius:3px 3px 0 0;display:flex;align-items:center;justify-content:space-between;}
-.cid-adj-block-body{border:1px solid var(--border);border-top:none;border-radius:0 0 3px 3px;padding:14px;}
-.charge-row{display:flex;border:1px solid var(--border);border-radius:3px;margin-bottom:14px;overflow:hidden;}
-.charge-row-item{flex:1;padding:8px 12px;border-right:1px solid var(--border);background:#f9f9f9;}
-.charge-row-item:last-child{border-right:none;}
-/* Callout */
-.callout{padding:10px 14px;border-left:4px solid var(--default);border-radius:0 3px 3px 0;margin-bottom:12px;background:#f4f4f4;font-size:13px;}
-.callout.callout-info{border-left-color:var(--info);background:#d9edf7;color:#31708f;}
-.callout.callout-success{border-left-color:var(--success);background:#dff0d8;color:#3c763d;}
-.callout.callout-warning{border-left-color:var(--warning);background:#fcf8e3;color:#8a6d3b;}
-.callout.callout-danger{border-left-color:var(--danger);background:#f2dede;color:#a94442;}
-/* Table */
-.table-summary{width:100%;border-collapse:collapse;font-size:13px;}
-.table-summary th{text-align:left;padding:7px 10px;background:#f7f7f7;border:1px solid var(--border);font-weight:600;color:var(--text-muted);font-size:11px;text-transform:uppercase;}
-.table-summary td{padding:7px 10px;border:1px solid var(--border);vertical-align:top;}
-.table-summary tr:nth-child(even) td{background:#fafafa;}
-/* Upload */
-.upload-zone{border:2px dashed var(--default);border-radius:3px;padding:14px;text-align:center;cursor:pointer;transition:all .2s;}
-.upload-zone:hover{border-color:var(--primary);background:var(--primary-xlight);}
-/* Period block */
-.period-block{background:#f9f9f9;border:1px solid var(--border);border-radius:3px;padding:12px;margin-bottom:8px;}
-/* Amt display */
-.amt-display{background:#f4f4f4;border:1px solid var(--border);border-radius:3px;padding:6px 10px;display:flex;justify-content:space-between;align-items:center;}
-/* Overlap warn */
-.ovlp-warn{background:#f2dede;border:1px solid #ebccd1;border-radius:3px;padding:7px 11px;font-size:12px;color:#a94442;display:flex;align-items:center;gap:7px;margin-bottom:8px;}
-/* Grid */
-.row{display:flex;gap:15px;flex-wrap:wrap;}
-.col-6{flex:1 1 calc(50% - 8px);min-width:200px;}
-.col-4{flex:1 1 calc(33.33% - 10px);min-width:150px;}
-.col-3{flex:1 1 calc(25% - 12px);min-width:130px;}
-/* Mode tabs */
-.mode-tabs{display:flex;border:1px solid var(--border);border-radius:3px;overflow:hidden;}
-.mode-tab{flex:1;padding:6px 14px;font-size:13px;font-weight:600;text-align:center;cursor:pointer;background:#f4f4f4;color:var(--text-muted);border:none;transition:all .15s;}
+.toggle-knob{position:absolute;width:14px;height:14px;background:#fff;border-radius:50%;top:3px;left:3px;transition:left .18s;box-shadow:0 1px 3px rgba(0,0,0,.2);}
+.toggle.on .toggle-knob{left:21px;}
+
+/* CID CARDS (step 3) */
+.cid-grid{display:flex;flex-direction:column;gap:6px;}
+.cid-search{margin-bottom:10px;}
+.cid-card{border:2px solid var(--border);border-radius:var(--radius);background:var(--white);transition:border-color .18s,box-shadow .18s;overflow:hidden;}
+.cid-card:hover{border-color:var(--primary-light);}
+.cid-card.sel{border-color:var(--primary);box-shadow:0 0 0 1px var(--primary);}
+/* Main row: checkbox + info + total + expand chevron */
+.cid-card-hdr{padding:9px 12px;display:flex;align-items:center;gap:10px;}
+.cid-card.sel .cid-card-hdr{background:var(--primary-xlight);}
+.cid-info{flex:1;min-width:0;}
+.cid-name{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:var(--primary);}
+.cid-sub{font-size:12px;color:var(--text-muted);display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:2px;}
+/* Expand button — separate from checkbox click */
+.cid-expand-btn{background:none;border:1px solid var(--border);border-radius:3px;cursor:pointer;width:26px;height:26px;display:flex;align-items:center;justify-content:center;color:#888;flex-shrink:0;font-size:12px;transition:all .15s;}
+.cid-expand-btn:hover{background:var(--primary-xlight);border-color:var(--primary);color:var(--primary);}
+.cid-expand-btn.open{background:var(--primary);border-color:var(--primary-dark);color:#fff;}
+/* Accordion body */
+.cid-charges-body{display:none;border-top:1px solid var(--border-light);}
+.cid-charges-body.open{display:block;}
+.cid-charges-row{display:grid;background:#fafbfc;}
+.charge-cell{padding:7px 14px;border-right:1px solid var(--border-light);}
+.charge-cell:last-child{border-right:none;}
+.charge-lbl{font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px;}
+.charge-val{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;}
+.charge-val.primary{color:var(--primary);}
+.charge-sub{font-size:10px;color:#bbb;margin-top:1px;}
+/* Device list in accordion */
+.cid-device-list{padding:8px 14px;border-top:1px solid var(--border-light);background:#f7f9fb;}
+.cid-device-item{display:flex;align-items:center;gap:8px;font-size:12px;padding:3px 0;border-bottom:1px solid var(--border-light);}
+.cid-device-item:last-child{border-bottom:none;}
+
+/* TABLE LAYOUT for adj step */
+.adj-table{width:100%;border-collapse:collapse;font-size:13px;}
+.adj-table th{padding:8px 11px;background:#f4f6f8;border:1px solid var(--border);font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.04em;text-align:left;white-space:nowrap;}
+.adj-table td{padding:8px 11px;border:1px solid var(--border);vertical-align:top;}
+.adj-table tr:nth-child(even) td{background:#fafafa;}
+.adj-table .enabled-row td{background:var(--primary-xlight)!important;}
+.type-enable-col{width:32px;text-align:center!important;}
+.type-label-col{width:160px;}
+.type-detail-col{}
+.type-amt-col{width:140px;text-align:right!important;white-space:nowrap;}
+
+/* CID BLOCK in step 4 */
+.cid-block{border:1px solid var(--border);border-radius:var(--radius);margin-bottom:16px;overflow:hidden;}
+.cid-block-hdr{background:var(--primary);color:#fff;padding:9px 14px;display:flex;align-items:center;justify-content:space-between;}
+.cid-block-hdr .mono{font-size:13px;font-weight:700;}
+.cid-block-body{padding:14px;}
+.cid-block-charges{display:flex;gap:0;background:#f7f9fb;border:1px solid var(--border);border-radius:var(--radius);margin-bottom:12px;overflow:hidden;}
+.cid-block-charges .charge-cell{flex:1;}
+
+/* PERIOD ENTRY */
+.period-row{background:#f7f9fb;border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;margin-bottom:8px;}
+.period-row.overlap{background:var(--danger-bg);border-color:var(--danger-border);}
+
+/* CALLOUT */
+.callout{padding:9px 13px;border-left:3px solid var(--border);border-radius:0 var(--radius) var(--radius) 0;font-size:12px;margin-bottom:11px;line-height:1.5;}
+.callout.info{border-color:var(--info);background:var(--info-bg);color:#0369a1;}
+.callout.warning{border-color:var(--warning);background:var(--warn-bg);color:#78450b;}
+.callout.danger{border-color:var(--danger);background:var(--danger-bg);color:#991b1b;}
+.callout.success{border-color:var(--success);background:#f0fdf4;color:#166534;}
+
+/* UPLOAD */
+.upload-area{border:2px dashed var(--border);border-radius:var(--radius);padding:12px 10px;text-align:center;cursor:pointer;transition:all .18s;}
+.upload-area:hover{border-color:var(--primary);background:var(--primary-xlight);}
+.upload-area .upload-icon{color:#bbb;margin-bottom:4px;}
+.upload-area .upload-txt{font-size:11px;color:#888;}
+
+/* AMT BOX */
+.amt-box{background:#f4f6f8;border:1px solid var(--border);border-radius:var(--radius);padding:6px 10px;font-family:'IBM Plex Mono',monospace;font-size:13px;}
+
+/* DEVICE TABLE */
+.device-tbl{width:100%;border-collapse:collapse;font-size:12px;}
+.device-tbl th{padding:6px 10px;background:#f4f6f8;border:1px solid var(--border);font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#888;font-weight:600;text-align:left;}
+.device-tbl td{padding:6px 10px;border:1px solid var(--border);}
+.device-tbl input{width:120px;}
+
+/* BULK PANEL */
+.bulk-wrap{background:var(--warn-bg);border:1px solid var(--warn-border);border-radius:var(--radius);margin-bottom:16px;overflow:hidden;}
+.bulk-hdr{padding:11px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;border-bottom:1px solid var(--warn-border);}
+.bulk-body{padding:14px;}
+
+/* MODE TABS */
+.mode-tabs{display:flex;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+.mode-tab{flex:1;padding:6px 14px;font-size:12px;font-weight:600;background:#f4f4f4;color:#777;border:none;cursor:pointer;transition:all .15s;text-align:center;}
 .mode-tab.active{background:var(--primary);color:#fff;}
-/* Bulk panel */
-.bulk-panel{background:#fff8f0;border:1px solid #f39c12;border-radius:3px;margin-bottom:18px;overflow:hidden;}
-.bulk-panel-hdr{background:#fcf8e3;padding:10px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;border-bottom:1px solid #f0e0a0;}
-.bulk-panel.collapsed .bulk-panel-body{display:none;}
-.bulk-panel-body{padding:14px;}
-/* Preview */
-.prev-cid{border:1px solid var(--border);border-radius:3px;margin-bottom:12px;overflow:hidden;}
-.prev-cid-hdr{background:#f7f7f7;padding:8px 14px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
-.prev-adj-row{padding:9px 14px;border-bottom:1px solid #f0f0f0;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
-.prev-adj-row:last-child{border-bottom:none;}
+
+/* PREVIEW */
+.prev-cid{border:1px solid var(--border);border-radius:var(--radius);margin-bottom:12px;overflow:hidden;}
+.prev-cid-hdr{background:#f7f9fb;padding:9px 14px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.prev-row{padding:8px 14px;border-bottom:1px solid var(--border-light);display:flex;align-items:flex-start;justify-content:space-between;gap:12px;font-size:13px;}
+.prev-row:last-child{border-bottom:none;}
 .prev-tot{background:var(--primary-xlight);padding:9px 14px;display:flex;justify-content:space-between;align-items:center;border-top:2px solid var(--primary);}
-/* Misc */
-.btn-remove{width:26px;height:26px;border-radius:3px;background:#f2dede;border:1px solid #ebccd1;color:var(--danger);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .15s;flex-shrink:0;font-weight:700;}
-.btn-remove:hover:not(:disabled){background:#ebccd1;}
-.btn-remove:disabled{opacity:.4;cursor:not-allowed;}
-.cid-tag{display:inline-flex;align-items:center;gap:4px;background:#f4f4f4;border:1px solid var(--border);border-radius:2px;padding:2px 7px;font-size:11px;font-family:'Source Code Pro',monospace;}
-.device-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f0f0f0;font-size:13px;}
-.device-row:last-child{border-bottom:none;}
+.grand-bar{background:var(--primary);color:#fff;border-radius:var(--radius);padding:12px 16px;display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+
+/* SUMMARY TABLE */
+.smry-tbl{width:100%;border-collapse:collapse;font-size:13px;max-width:520px;}
+.smry-tbl th{padding:7px 10px;background:#f7f9fb;border:1px solid var(--border);font-weight:600;color:#777;font-size:11px;text-align:left;white-space:nowrap;}
+.smry-tbl td{padding:7px 10px;border:1px solid var(--border);}
+.smry-tbl tr:nth-child(even) td{background:#fafafa;}
+
+/* SUCCESS */
+.success-circle{width:56px;height:56px;border-radius:50%;background:var(--success);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;}
+
+/* SECTION SWITCH */
 .section{display:none;}
-.section.active{display:block;animation:fadeIn .25s ease;}
-@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
-.success-icon{width:60px;height:60px;border-radius:50%;background:var(--success);display:flex;align-items:center;justify-content:center;margin:0 auto 15px;}
+.section.active{display:block;animation:fIn .2s ease;}
+@keyframes fIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes shake{0%,100%{transform:none}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
 ::-webkit-scrollbar{width:5px;height:5px;}
 ::-webkit-scrollbar-thumb{background:#ccc;border-radius:3px;}
 </style>
 </head>
 <body>
 
-<div class="main-header">
+<div class="app-header">
   <div class="logo">
-    <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2L3 5.5v7L9 16l6-3.5v-7L9 2z" stroke="#fff" stroke-width="1.4" stroke-linejoin="round"/><path d="M9 2v14M3 5.5l6 3.5 6-3.5" stroke="#fff" stroke-width="1.4" stroke-linejoin="round"/></svg>
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2L3 6v8l7 4 7-4V6L10 2z" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 2v18M3 6l7 4 7-4" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/></svg>
   </div>
   <h1>Billing System</h1>
-  <div class="bc">Dashboard / Adjustments / <span>New Request</span></div>
+  <div class="breadcrumb">Dashboard / Billing / <span>Adjustment Request</span></div>
 </div>
 
-<div class="wrapper">
-  <div class="content-header">
-    <h2>Adjustment Request</h2>
-    <ul class="breadcrumb"><li>Home</li><li>Billing</li><li class="active">Adjustment Request</li></ul>
+<div class="page">
+  <div class="page-title">
+    Adjustment Request
+    <small>Before invoice only — post-invoice use Credit Note module</small>
   </div>
 
-  <div class="steps-bar" id="stepper"></div>
+  <div class="stepper" id="stepper"></div>
 
-  <div class="ctx-bar" id="ctx-bar" style="display:none;">
-    <span>Parent CID: <span class="cv" id="sb-parent">—</span></span>
-    <span>Cycle: <span class="cv" id="sb-cycle">—</span></span>
-    <span>CIDs: <span class="cv" id="sb-cids">—</span></span>
+  <div class="ctx" id="ctx-bar" style="display:none;">
+    <span class="ctx-item"><span class="lbl">Account:</span><span class="val" id="sb-parent">—</span></span>
+    <span class="ctx-item"><span class="lbl">UName:</span><span class="val" id="sb-uname">—</span></span>
+    <span class="ctx-item"><span class="lbl">Cycle:</span><span class="val" id="sb-cycle">—</span></span>
+    <span class="ctx-item"><span class="lbl">PI:</span><span class="val" id="sb-pi">—</span></span>
+    <span class="ctx-item"><span class="lbl">CIDs:</span><span class="val" id="sb-cids">—</span></span>
   </div>
 
-  <!-- STEP 1 -->
+  <!-- ===== STEP 1: SEARCH ===== -->
   <div class="section active" id="sec-1">
-    <div class="box box-primary">
-      <div class="box-header"><div class="box-title"><span class="step-badge">STEP 01</span> Select Parent CID</div></div>
-      <div class="box-body">
-        <p style="color:var(--text-muted);font-size:13px;margin-bottom:12px;">Choose the parent customer account to begin the adjustment process.</p>
-        <div class="form-group" style="max-width:420px;">
-          <label>Customer Account</label>
-          <select class="form-control" id="parent-cid" onchange="onParentChange()">
-            <option value="">— Select Parent CID —</option>
-            <option value="E003-B01-19">E003-B01-19 &middot; Everest Broadband (HQ)</option>
-          </select>
+    <div class="card c-primary">
+      <div class="card-hdr"><div class="card-title"><span class="step-pill">STEP 01</span> Find Account</div></div>
+      <div class="card-body">
+        <p style="color:var(--text-muted);font-size:12px;margin-bottom:14px;">Search by any combination below — all active fields work together (AND filter).</p>
+        <div class="search-wrap" style="grid-template-columns:1fr 1fr;margin-bottom:10px;">
+          <div class="fgrp" style="margin:0;">
+            <label>Parent / Child Circuit ID</label>
+            <div class="search-input-wrap">
+              <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#aaa" stroke-width="1.8"/><path d="M20 20l-3.5-3.5" stroke="#aaa" stroke-width="1.8" stroke-linecap="round"/></svg>
+              <input class="form-control" id="s-cid" placeholder="E003-B01-19 or E003-K01-49" oninput="runSearch()"/>
+            </div>
+          </div>
+          <div class="fgrp" style="margin:0;">
+            <label>UName</label>
+            <div class="search-input-wrap">
+              <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#aaa" stroke-width="1.8"/><path d="M20 20l-3.5-3.5" stroke="#aaa" stroke-width="1.8" stroke-linecap="round"/></svg>
+              <input class="form-control" id="s-uname" placeholder="everest_ent" oninput="runSearch()"/>
+            </div>
+          </div>
+        </div>
+        <div class="search-wrap" style="grid-template-columns:1fr 1fr;margin-bottom:10px;">
+          <div class="fgrp" style="margin:0;">
+            <label>Transaction Number <span style="font-weight:400;color:#aaa;font-size:11px;">— same txn number can appear in multiple rows</span></label>
+            <div class="search-input-wrap">
+              <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#aaa" stroke-width="1.8"/><path d="M20 20l-3.5-3.5" stroke="#aaa" stroke-width="1.8" stroke-linecap="round"/></svg>
+              <input class="form-control" id="s-txn" placeholder="INST-143/CRM-156073" oninput="runSearch()"/>
+            </div>
+            <div style="font-size:10px;color:#aaa;margin-top:3px;">One transaction links to one CID. Multiple rows share the same txn number for different charge types.</div>
+          </div>
+          <div class="fgrp" style="margin:0;">
+            <label>PI Number <span style="font-weight:400;color:#aaa;font-size:11px;">— unique proforma invoice, covers multiple CIDs</span></label>
+            <div class="search-input-wrap">
+              <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#aaa" stroke-width="1.8"/><path d="M20 20l-3.5-3.5" stroke="#aaa" stroke-width="1.8" stroke-linecap="round"/></svg>
+              <input class="form-control" id="s-pi" placeholder="PI-FY-FY2082-2083-000000003" oninput="runSearch()"/>
+            </div>
+            <div style="font-size:10px;color:#aaa;margin-top:3px;">PI number is unique. One PI can cover all CIDs under a billing cycle.</div>
+          </div>
+        </div>
+        <div class="search-wrap" style="grid-template-columns:1fr 1fr 1fr;margin-bottom:10px;">
+          <div class="fgrp" style="margin:0;">
+            <label>Fiscal Year <span style="font-weight:400;color:#aaa;font-size:11px;">— filter cycles by FY</span></label>
+            <select class="form-control" id="s-fy" onchange="runSearch()" style="font-size:13px;">
+              <option value="">All Fiscal Years</option>
+            </select>
+          </div>
+          <div class="col2 fgrp" style="margin:0;">
+            <label>Billing Period From <span style="font-weight:400;color:#aaa;font-size:11px;">— cycles overlapping range</span></label>
+            <input class="form-control" type="date" id="s-from" oninput="runSearch()"/>
+          </div>
+          <div class="col2 fgrp" style="margin:0;">
+            <label>Billing Period To</label>
+            <input class="form-control" type="date" id="s-to" oninput="runSearch()"/>
+          </div>
+        </div>
+        <div id="search-results" style="margin-top:10px;"></div>
+        <div id="sel-account" style="display:none;margin-top:10px;">
+          <div class="callout success" id="sel-account-info"></div>
         </div>
       </div>
-      <div class="box-footer">
-        <span></span>
-        <button class="btn btn-primary" onclick="goTo(2)">Continue &rarr;</button>
+      <div class="card-foot">
+        <span style="font-size:12px;color:var(--text-muted);" id="search-hint">Enter at least one search field</span>
+        <button class="btn btn-primary" onclick="goTo(2)">Continue →</button>
       </div>
     </div>
   </div>
 
-  <!-- STEP 2 -->
+  <!-- ===== STEP 2: BILLING CYCLE ===== -->
   <div class="section" id="sec-2">
-    <div class="box box-primary">
-      <div class="box-header"><div class="box-title"><span class="step-badge">STEP 02</span> Select Billing Cycle</div></div>
-      <div class="box-body">
-        <div class="callout callout-info" style="margin-bottom:14px;">Only cycles with pending unbilled transactions are shown.</div>
-        <div id="cycle-list"></div>
+    <div class="card c-primary">
+      <div class="card-hdr"><div class="card-title"><span class="step-pill">STEP 02</span> Select Billing Cycle</div></div>
+      <div class="card-body">
+        <div class="callout info" style="margin-bottom:14px;">Only unbilled cycles are listed. OTC / device charges may appear in any cycle when new equipment is added.</div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;gap:7px;">
+            <label style="font-size:11px;font-weight:600;color:#666;white-space:nowrap;">Fiscal Year</label>
+            <select class="form-control" id="fy-filter" onchange="renderCycles()" style="width:auto;min-width:160px;font-size:12px;padding:5px 28px 5px 8px;">
+              <option value="">All Fiscal Years</option>
+            </select>
+          </div>
+          <span id="cycle-count" style="font-size:11px;color:#aaa;"></span>
+        </div>
+        <div id="cycle-highlight-note"></div>
+        <div class="cycle-grid" id="cycle-list"></div>
       </div>
-      <div class="box-footer">
-        <button class="btn btn-default" onclick="goTo(1)">&larr; Back</button>
-        <button class="btn btn-primary" id="btn-2" onclick="goTo(3)" disabled>Continue &rarr;</button>
+      <div class="card-foot">
+        <button class="btn btn-default" onclick="goTo(1)">← Back</button>
+        <button class="btn btn-primary" id="btn-2" onclick="goTo(3)" disabled>Continue →</button>
       </div>
     </div>
   </div>
 
-  <!-- STEP 3 -->
+  <!-- ===== STEP 3: CIDs ===== -->
   <div class="section" id="sec-3">
-    <div class="box box-primary">
-      <div class="box-header">
-        <div class="box-title"><span class="step-badge">STEP 03</span> Select Branch CIDs</div>
+    <div class="card c-primary">
+      <div class="card-hdr">
+        <div class="card-title">
+          <span class="step-pill">STEP 03</span> Select Branch CIDs
+          <span id="cid-total-chip" style="font-size:11px;font-weight:400;color:var(--text-muted);background:#f0f4f8;border:1px solid var(--border);border-radius:10px;padding:1px 9px;margin-left:4px;"></span>
+        </div>
         <div style="display:flex;gap:6px;">
           <button class="btn btn-default btn-xs" onclick="selectAllCIDs()">Select All</button>
           <button class="btn btn-default btn-xs" onclick="clearAllCIDs()">Clear</button>
         </div>
       </div>
-      <div class="box-body">
-        <p style="color:var(--text-muted);font-size:13px;margin-bottom:12px;">Each card shows installation, device, and service charges for the selected billing cycle.</p>
-        <div id="cid-list"></div>
+      <div class="card-body">
+        <div id="cid-cycle-info" style="margin-bottom:10px;"></div>
+        <div id="cid-preselect-note" class="callout info" style="display:none;margin-bottom:10px;"></div>
+        <div class="cid-search" style="display:flex;gap:8px;align-items:center;">
+          <div class="search-input-wrap" style="flex:1;">
+            <svg class="icon" width="13" height="13" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#aaa" stroke-width="1.8"/><path d="M20 20l-3.5-3.5" stroke="#aaa" stroke-width="1.8" stroke-linecap="round"/></svg>
+            <input class="form-control" id="cid-filter" placeholder="Filter by CID, UName or location…" oninput="cidPage=1;renderCIDList()" style="padding-left:32px;"/>
+          </div>
+          <span id="cid-filter-count" style="font-size:11px;color:#aaa;white-space:nowrap;"></span>
+        </div>
+        <div id="cid-list" class="cid-grid"></div>
+        <div id="cid-load-more" style="display:none;text-align:center;padding:10px 0;">
+          <button class="btn btn-default btn-sm" onclick="loadMoreCIDs()">Load more CIDs ↓</button>
+        </div>
       </div>
-      <div class="box-footer">
-        <button class="btn btn-default" onclick="goTo(2)">&larr; Back</button>
-        <button class="btn btn-primary" id="btn-3" onclick="goTo(4)" disabled>Continue &rarr;</button>
+      <div class="card-foot">
+        <button class="btn btn-default" onclick="goTo(2)">← Back</button>
+        <button class="btn btn-primary" id="btn-3" onclick="goTo(4)" disabled>Continue →</button>
       </div>
     </div>
   </div>
 
-  <!-- STEP 4 -->
+  <!-- ===== STEP 4: CONFIGURE ===== -->
   <div class="section" id="sec-4">
-    <div class="box box-primary">
-      <div class="box-header">
-        <div class="box-title"><span class="step-badge">STEP 04</span> Configure Adjustments</div>
+    <div class="card c-primary">
+      <div class="card-hdr">
+        <div class="card-title"><span class="step-pill">STEP 04</span> Configure Adjustments</div>
         <div class="mode-tabs">
-          <button class="mode-tab" id="mode-individual-btn" onclick="setMode('individual')">Individual</button>
-          <button class="mode-tab" id="mode-bulk-btn" onclick="setMode('bulk')">Bulk</button>
+          <button class="mode-tab active" id="tab-ind" onclick="setMode('individual')">Individual</button>
+          <button class="mode-tab" id="tab-bulk" onclick="setMode('bulk')">Bulk Apply</button>
         </div>
       </div>
-      <div class="box-body">
-        <p style="color:var(--text-muted);font-size:13px;margin-bottom:14px;" id="mode-desc">Each branch CID is configured independently.</p>
-
-        <!-- BULK (only outage/unused) -->
+      <div class="card-body">
+        <!-- Bulk panel -->
         <div id="bulk-section" style="display:none;">
-          <div class="bulk-panel" id="bulk-panel">
-            <div class="bulk-panel-hdr" onclick="toggleBulkPanel()">
-              <div style="flex:1;">
-                <strong style="font-size:14px;color:#8a6d3b;">Bulk Adjustment</strong>
-                <span style="font-size:12px;color:#777;margin-left:8px;">Apply the same outage / unused period to all selected CIDs at once</span>
-              </div>
-              <span id="bulk-chevron" style="color:#777;font-size:12px;">&#9650;</span>
+          <div class="bulk-wrap">
+            <div class="bulk-hdr" onclick="toggleBulkPanel()">
+              <strong style="color:#78450b;">Bulk Adjustment</strong>
+              <span style="font-size:12px;color:#888;margin-left:8px;">Apply same outage/unused period to all selected CIDs</span>
+              <span id="bulk-chev" style="margin-left:auto;color:#888;">▲</span>
             </div>
-            <div class="bulk-panel-body">
+            <div class="bulk-body" id="bulk-body">
               <div style="margin-bottom:12px;">
-                <label style="font-size:11px;font-weight:600;color:#777;text-transform:uppercase;letter-spacing:.04em;display:block;margin-bottom:6px;">Applying To</label>
+                <label style="font-size:11px;font-weight:600;color:#888;text-transform:uppercase;display:block;margin-bottom:6px;">Applying to CIDs</label>
                 <div id="bulk-cid-tags" style="display:flex;flex-wrap:wrap;gap:5px;"></div>
               </div>
-              <div class="form-group" style="max-width:300px;">
+              <div class="fgrp" style="max-width:280px;">
                 <label>Adjustment Type</label>
                 <select class="form-control" id="bulk-type" onchange="renderBulkFields()">
-                  <option value="">— Select type —</option>
+                  <option value="">— Select —</option>
                   <option value="outage">Service Outage</option>
                   <option value="unused">Service Unused</option>
                 </select>
               </div>
-              <div id="bulk-outage-fields" style="display:none;">
-                <label style="font-size:11px;font-weight:600;color:#777;text-transform:uppercase;letter-spacing:.04em;display:block;margin-bottom:6px;">Outage / Unused Periods</label>
-                <div id="bulk-entry-list" style="margin-bottom:8px;"></div>
+              <div id="bulk-fields" style="display:none;">
+                <div id="bulk-entries"></div>
                 <button class="btn btn-default btn-xs" onclick="addBulkEntry()">+ Add Period</button>
-                <div class="callout callout-warning" style="margin-top:10px;font-size:12px;">These date ranges apply identically to all selected CIDs. Each CID's deduction will differ based on its own MRC.</div>
-                <!-- Attachments inside bulk outage -->
-                <div style="margin-top:12px;padding-top:12px;border-top:1px solid #f0e0a0;">
-                  <label style="font-size:11px;font-weight:600;color:#777;text-transform:uppercase;letter-spacing:.04em;display:block;margin-bottom:8px;">Attachments</label>
-                  <div class="row">
-                    <div class="col-6"><div class="form-group" style="margin-bottom:0;"><label style="font-size:12px;">System-Down Graph</label>
-                      <label class="upload-zone" style="display:block;cursor:pointer;">
-                        <svg style="display:block;margin:0 auto 4px;opacity:.4;" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke="#333" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                        <span style="font-size:12px;color:#777;" id="b-graph-lbl">Upload image</span>
-                        <input type="file" accept="image/*" style="display:none;" onchange="handleFile(this,'b-graph-lbl')"/>
-                      </label>
-                    </div></div>
-                    <div class="col-6"><div class="form-group" style="margin-bottom:0;"><label style="font-size:12px;">Calculation Sheet</label>
-                      <label class="upload-zone" style="display:block;cursor:pointer;">
-                        <svg style="display:block;margin:0 auto 4px;opacity:.4;" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z" stroke="#333" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                        <span style="font-size:12px;color:#777;" id="b-sheet-lbl">Upload PDF / Excel</span>
-                        <input type="file" accept=".pdf,.xlsx,.xls,.csv" style="display:none;" onchange="handleFile(this,'b-sheet-lbl')"/>
-                      </label>
-                    </div></div>
+                <div class="callout warning" style="margin-top:10px;">These ranges apply to all selected CIDs. Each CID's deduction is calculated from its own MRC.</div>
+                <div class="row" style="margin-top:10px;">
+                  <div class="col2 fgrp" style="margin-bottom:0;">
+                    <label style="font-size:11px;">System-Down Graph</label>
+                    <label class="upload-area" style="display:block;">
+                      <div class="upload-icon">↑</div>
+                      <span class="upload-txt" id="b-glbl">Upload image (JPG/PNG)</span>
+                      <input type="file" accept="image/*" style="display:none;" onchange="setFileLbl(this,'b-glbl')"/>
+                    </label>
+                  </div>
+                  <div class="col2 fgrp" style="margin-bottom:0;">
+                    <label style="font-size:11px;">Calculation Sheet</label>
+                    <label class="upload-area" style="display:block;">
+                      <div class="upload-icon">↑</div>
+                      <span class="upload-txt" id="b-slbl">Upload PDF / Excel</span>
+                      <input type="file" accept=".pdf,.xlsx,.xls,.csv" style="display:none;" onchange="setFileLbl(this,'b-slbl')"/>
+                    </label>
                   </div>
                 </div>
-              </div>
-              <div style="margin-top:14px;display:flex;justify-content:flex-end;gap:8px;">
-                <button class="btn btn-default btn-sm" onclick="clearBulk()">Clear Bulk</button>
-                <button class="btn btn-warning btn-sm" onclick="applyBulk()">Apply to All CIDs &darr;</button>
+                <div style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end;">
+                  <button class="btn btn-default btn-sm" onclick="clearBulk()">Clear</button>
+                  <button class="btn btn-primary btn-sm" onclick="applyBulk()">Apply to All CIDs ↓</button>
+                </div>
               </div>
             </div>
           </div>
-          <div id="bulk-results" style="margin-bottom:14px;"></div>
+          <div id="bulk-applied"></div>
         </div>
-
-        <!-- INDIVIDUAL -->
+        <!-- Individual blocks -->
         <div id="individual-section">
           <div id="adj-blocks"></div>
         </div>
       </div>
-      <div class="box-footer">
-        <button class="btn btn-default" onclick="goTo(3)">&larr; Back</button>
-        <button class="btn btn-primary" onclick="goTo(5)">Preview &rarr;</button>
+      <div class="card-foot">
+        <button class="btn btn-default" onclick="goTo(3)">← Back</button>
+        <button class="btn btn-primary" onclick="goTo(5)">Preview →</button>
       </div>
     </div>
   </div>
 
-  <!-- STEP 5 -->
+  <!-- ===== STEP 5: PREVIEW ===== -->
   <div class="section" id="sec-5">
-    <div class="box box-success">
-      <div class="box-header"><div class="box-title"><span class="step-badge success">STEP 05</span> Preview &amp; Submit</div></div>
-      <div class="box-body"><div id="preview-content"></div></div>
-      <div class="box-footer">
-        <button class="btn btn-default" onclick="goTo(4)">&larr; Edit</button>
-        <button class="btn btn-success" onclick="submitAdjustment()">&#10003; Submit for Approval</button>
+    <div class="card c-success">
+      <div class="card-hdr"><div class="card-title"><span class="step-pill success">STEP 05</span> Preview & Submit</div></div>
+      <div class="card-body"><div id="preview-content"></div></div>
+      <div class="card-foot">
+        <button class="btn btn-default" onclick="goTo(4)">← Edit</button>
+        <button class="btn btn-success" onclick="submitAdj()">✓ Submit for Approval</button>
       </div>
     </div>
   </div>
 
-  <!-- STEP 6 -->
+  <!-- ===== STEP 6: DONE ===== -->
   <div class="section" id="sec-6">
-    <div class="box box-success">
-      <div class="box-body" style="text-align:center;padding:30px 20px;">
-        <div class="success-icon">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div class="card c-success">
+      <div class="card-body" style="text-align:center;padding:32px 20px;">
+        <div class="success-circle">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
-        <h3 style="font-size:20px;font-weight:600;margin-bottom:6px;">Adjustment Submitted</h3>
-        <p style="color:var(--text-muted);margin-bottom:4px;">Pending approval from <strong id="sub-approver" style="color:var(--text);"></strong></p>
-        <p class="mono" style="font-size:13px;color:var(--primary);font-weight:600;margin-bottom:20px;" id="sub-ref"></p>
-        <div id="sub-summary" style="text-align:left;max-width:500px;margin:0 auto 20px;"></div>
+        <h3 style="font-size:19px;font-weight:600;margin-bottom:5px;">Adjustment Submitted</h3>
+        <p style="color:#888;margin-bottom:4px;">Pending approval from <strong style="color:var(--text);" id="sub-approver"></strong></p>
+        <p class="mono" style="font-size:13px;color:var(--primary);font-weight:600;margin-bottom:22px;" id="sub-ref"></p>
+        <div id="sub-summary" style="text-align:left;max-width:480px;margin:0 auto 22px;"></div>
         <button class="btn btn-default" onclick="resetForm()">+ New Adjustment</button>
       </div>
     </div>
@@ -377,538 +510,1256 @@ input[type="date"].form-control::-webkit-calendar-picker-indicator{cursor:pointe
 </div>
 
 <script>
-const CID_DATA = {
+// ─── DATA ─────────────────────────────────────────────────────────────────────
+// Devices per CID: base set (cycle 1) + mid-contract addition (cycle 4)
+const ACCOUNTS = {
   'E003-B01-19': {
-    cycles:[
-      {id:'c1',label:'Mar 25\u201331, 2026',start:'2026-03-25',end:'2026-03-31',fiscal:'FY2082/2083',hasInstall:true, hasDevice:true},
-      {id:'c2',label:'Apr 1\u201330, 2026', start:'2026-04-01',end:'2026-04-30',fiscal:'FY2082/2083',hasInstall:false,hasDevice:false},
-      {id:'c3',label:'May 1\u201331, 2026', start:'2026-05-01',end:'2026-05-31',fiscal:'FY2082/2083',hasInstall:false,hasDevice:false},
+    parent: 'E003-B01-19',
+    uname: 'everest_ent',
+    location: 'Everest Corp HQ',
+    paymentTerm: 'Monthly',
+    children: [
+      {
+        id:'E003-K01-49', uname:'everest_k01_ent', label:'Kathmandu Branch 1', location:'Kathmandu, KTM', mrc:28000,
+        devices:[
+          {name:'Cisco Router 2900', price:18600, cycleAdded:'c1'},
+          {name:'TP-Link Switch 24P', price:10000, cycleAdded:'c1'},
+          {name:'Cisco Catalyst 2960 (New)', price:15200, cycleAdded:'c4'}, // added in cycle 4
+        ]
+      },
+      {
+        id:'E003-B01-50', uname:'everest_bkt_ent', label:'Bhaktapur Branch', location:'Bhaktapur, BKT', mrc:10000,
+        devices:[
+          {name:'Mikrotik RB4011', price:14800, cycleAdded:'c1'},
+          {name:'HP Switch 1820',  price:8800,  cycleAdded:'c1'},
+        ]
+      },
+      {
+        id:'E003-K01-43', uname:'everest_k02_ent', label:'Kathmandu Branch 2', location:'Lalitpur, LTP', mrc:15000,
+        devices:[
+          {name:'Ubiquiti EdgeRouter', price:22000, cycleAdded:'c1'},
+          {name:'Cisco SG300',         price:14600, cycleAdded:'c1'},
+          {name:'Fortinet FortiAP (New)', price:18500, cycleAdded:'c4'}, // added in cycle 4
+        ]
+      },
     ],
-    children:[
-      {id:'E003-K01-49',label:'Kathmandu Branch 1',mrc:28000,install:20000,deviceCharge:28600,devices:[{name:'Cisco Router 2900',price:18600},{name:'TP-Link Switch 24P',price:10000}]},
-      {id:'E003-B01-50',label:'Bhaktapur Branch',  mrc:10000,install:20000,deviceCharge:23600,devices:[{name:'Mikrotik RB4011',price:14800},{name:'HP Switch 1820',price:8800}]},
-      {id:'E003-K01-43',label:'Kathmandu Branch 2',mrc:15000,install:20000,deviceCharge:36600,devices:[{name:'Ubiquiti EdgeRouter',price:22000},{name:'Cisco SG300',price:14600}]},
+    cycles: [
+      // Cycle 1 — initial install: all three CIDs get installation + device + service
+      {
+        id:'c1', label:'Mar 25–31, 2026', start:'2026-03-25', end:'2026-03-31', fiscal:'FY2082/2083',
+        piNumbers:['PI-FY-FY2082-2083-000000003'],
+        charges:{
+          'E003-K01-49':{install:20000, device:28600,  newDevices:['Cisco Router 2900','TP-Link Switch 24P']},
+          'E003-B01-50':{install:20000, device:23600,  newDevices:['Mikrotik RB4011','HP Switch 1820']},
+          'E003-K01-43':{install:20000, device:36600,  newDevices:['Ubiquiti EdgeRouter','Cisco SG300']},
+        }
+      },
+      // Cycles 2–3 — service only
+      {
+        id:'c2', label:'Apr 1–30, 2026', start:'2026-04-01', end:'2026-04-30', fiscal:'FY2082/2083',
+        piNumbers:['PI-FY-FY2082-2083-000000004'],
+        charges:{}
+      },
+      {
+        id:'c3', label:'May 1–31, 2026', start:'2026-05-01', end:'2026-05-31', fiscal:'FY2082/2083',
+        piNumbers:['PI-FY-FY2082-2083-000000005'],
+        charges:{}
+      },
+      // Cycle 4 — mid-contract new device installation for K01-49 and K01-43 only
+      {
+        id:'c4', label:'Jun 1–30, 2026', start:'2026-06-01', end:'2026-06-30', fiscal:'FY2082/2083',
+        piNumbers:['PI-FY-FY2082-2083-000000006'],
+        charges:{
+          'E003-K01-49':{install:12000, device:15200, newDevices:['Cisco Catalyst 2960 (New)']},
+          'E003-K01-43':{install:12000, device:18500, newDevices:['Fortinet FortiAP (New)']},
+          // B01-50 has service only this cycle
+        }
+      },
+      // Cycles 5–7 — service only for all
+      {
+        id:'c5', label:'Jul 1–31, 2026', start:'2026-07-01', end:'2026-07-31', fiscal:'FY2082/2083',
+        piNumbers:['PI-FY-FY2082-2083-000000007'],
+        charges:{}
+      },
+      {
+        id:'c6', label:'Aug 1–31, 2026', start:'2026-08-01', end:'2026-08-31', fiscal:'FY2082/2083',
+        piNumbers:['PI-FY-FY2082-2083-000000008'],
+        charges:{}
+      },
+      {
+        id:'c7', label:'Sep 1–30, 2026', start:'2026-09-01', end:'2026-09-30', fiscal:'FY2082/2083',
+        piNumbers:['PI-FY-FY2082-2083-000000009'],
+        charges:{}
+      },
     ]
   }
 };
 
-// Late fee removed
+// ── Generate 200 synthetic CIDs for R0325-K01 parent (large-data stress test) ──
+(function() {
+  const locations = ['Kathmandu, KTM','Lalitpur, LTP','Bhaktapur, BKT','Pokhara, PKR','Chitwan, CHT','Butwal, BTL','Birgunj, BRG','Biratnagar, BRT','Dharan, DHR','Hetauda, HTD'];
+  const labels    = ['Branch','Office','Hub','Node','Site','Outlet','Unit','Center','Depot','Point'];
+  const deviceSets = [
+    [{name:'Cisco Router 2900', price:18600},{name:'TP-Link Switch 24P', price:10000}],
+    [{name:'Mikrotik RB4011', price:14800},{name:'HP Switch 1820', price:8800}],
+    [{name:'Ubiquiti EdgeRouter', price:22000},{name:'Cisco SG300', price:14600}],
+    [{name:'Juniper SRX300', price:32000},{name:'D-Link DGS-1016', price:7400}],
+    [{name:'Fortinet 60F', price:45000},{name:'Netgear GS316', price:6200}],
+  ];
+  const children200 = [];
+  for (let i = 1; i <= 200; i++) {
+    const n      = String(i).padStart(3,'0');
+    const locI   = (i-1) % locations.length;
+    const lblI   = Math.floor((i-1)/10) % labels.length;
+    const devSet = deviceSets[(i-1) % deviceSets.length];
+    children200.push({
+      id:`R0325-K01-${n}`,
+      uname:`u01_svc_${n}`,
+      label:`${labels[lblI]} ${i}`,
+      location: locations[locI],
+      mrc: 5000 + (i % 20) * 1000,
+      devices: devSet.map(d=>({...d, cycleAdded:'c1'}))
+    });
+  }
+  ACCOUNTS['R0325-K01-00'] = {
+    parent:'R0325-K01-00', uname:'rdtest_ent', location:'Rd Test Corp HQ', paymentTerm:'Quarterly',
+    children: children200,
+    cycles: [
+      {id:'c1',label:'Mar 25–31, 2026',start:'2026-03-25',end:'2026-03-31',fiscal:'FY2082/2083',
+       piNumbers:['PI-FY-FY2082-2083-000000010'],
+       charges: Object.fromEntries(children200.map(c=>[c.id,{install:15000,device:c.devices.reduce((s,d)=>s+d.price,0),newDevices:c.devices.map(d=>d.name)}]))},
+      {id:'c2',label:'Apr 1–30, 2026',start:'2026-04-01',end:'2026-04-30',fiscal:'FY2082/2083',piNumbers:['PI-FY-FY2082-2083-000000011'],charges:{}},
+      {id:'c3',label:'May 1–31, 2026',start:'2026-05-01',end:'2026-05-31',fiscal:'FY2082/2083',piNumbers:['PI-FY-FY2082-2083-000000012'],charges:{}},
+      {id:'c4',label:'Jun 1–30, 2026',start:'2026-06-01',end:'2026-06-30',fiscal:'FY2083/2084',piNumbers:['PI-FY-FY2083-2084-000000001'],charges:{}},
+      {id:'c5',label:'Jul 1–31, 2026',start:'2026-07-01',end:'2026-07-31',fiscal:'FY2083/2084',piNumbers:['PI-FY-FY2083-2084-000000002'],charges:{}},
+      {id:'c6',label:'Aug 1–31, 2026',start:'2026-08-01',end:'2026-08-31',fiscal:'FY2083/2084',piNumbers:['PI-FY-FY2083-2084-000000003'],charges:{}},
+    ]
+  };
+})();
+
+// ─── TRANSACTIONS ─────────────────────────────────────────────────────────────
+// txnNumber can repeat across DB rows (same txn, multiple line items).
+// piNumber is unique per PI. One PI links to multiple transactions.
+// PI-003 covers cycle 1 (initial install): txns for all 3 CIDs
+// PI-004 covers cycle 2, etc.
+const TRANSACTIONS = [
+  // Cycle 1 — initial: installation + device + service for each CID
+  {txnNumber:'INST-143/CRM-156073', piNumber:'PI-FY-FY2082-2083-000000003', parentCID:'E003-B01-19', childCID:'E003-K01-49', cycleId:'c1', type:'installation', description:'One Time Installation Charge'},
+  {txnNumber:'INST-143/CRM-156073', piNumber:'PI-FY-FY2082-2083-000000003', parentCID:'E003-B01-19', childCID:'E003-K01-49', cycleId:'c1', type:'device',       description:'One Time Device Charge'},
+  {txnNumber:'INST-143/CRM-156073', piNumber:'PI-FY-FY2082-2083-000000003', parentCID:'E003-B01-19', childCID:'E003-K01-49', cycleId:'c1', type:'service',      description:'Monthly Recurring Charge'},
+
+  {txnNumber:'INST-144/CRM-225596', piNumber:'PI-FY-FY2082-2083-000000003', parentCID:'E003-B01-19', childCID:'E003-B01-50', cycleId:'c1', type:'installation', description:'One Time Installation Charge'},
+  {txnNumber:'INST-144/CRM-225596', piNumber:'PI-FY-FY2082-2083-000000003', parentCID:'E003-B01-19', childCID:'E003-B01-50', cycleId:'c1', type:'device',       description:'One Time Device Charge'},
+  {txnNumber:'INST-144/CRM-225596', piNumber:'PI-FY-FY2082-2083-000000003', parentCID:'E003-B01-19', childCID:'E003-B01-50', cycleId:'c1', type:'service',      description:'Monthly Recurring Charge'},
+
+  {txnNumber:'INST-145/CRM-225634', piNumber:'PI-FY-FY2082-2083-000000003', parentCID:'E003-B01-19', childCID:'E003-K01-43', cycleId:'c1', type:'installation', description:'One Time Installation Charge'},
+  {txnNumber:'INST-145/CRM-225634', piNumber:'PI-FY-FY2082-2083-000000003', parentCID:'E003-B01-19', childCID:'E003-K01-43', cycleId:'c1', type:'device',       description:'One Time Device Charge'},
+  {txnNumber:'INST-145/CRM-225634', piNumber:'PI-FY-FY2082-2083-000000003', parentCID:'E003-B01-19', childCID:'E003-K01-43', cycleId:'c1', type:'service',      description:'Monthly Recurring Charge'},
+
+  // Cycle 2 — service only
+  {txnNumber:'SVC-156073/APR-2026',  piNumber:'PI-FY-FY2082-2083-000000004', parentCID:'E003-B01-19', childCID:'E003-K01-49', cycleId:'c2', type:'service', description:'Monthly Recurring Charge'},
+  {txnNumber:'SVC-225596/APR-2026',  piNumber:'PI-FY-FY2082-2083-000000004', parentCID:'E003-B01-19', childCID:'E003-B01-50', cycleId:'c2', type:'service', description:'Monthly Recurring Charge'},
+  {txnNumber:'SVC-225634/APR-2026',  piNumber:'PI-FY-FY2082-2083-000000004', parentCID:'E003-B01-19', childCID:'E003-K01-43', cycleId:'c2', type:'service', description:'Monthly Recurring Charge'},
+
+  // Cycle 3 — service only
+  {txnNumber:'SVC-156073/MAY-2026',  piNumber:'PI-FY-FY2082-2083-000000005', parentCID:'E003-B01-19', childCID:'E003-K01-49', cycleId:'c3', type:'service', description:'Monthly Recurring Charge'},
+  {txnNumber:'SVC-225596/MAY-2026',  piNumber:'PI-FY-FY2082-2083-000000005', parentCID:'E003-B01-19', childCID:'E003-B01-50', cycleId:'c3', type:'service', description:'Monthly Recurring Charge'},
+  {txnNumber:'SVC-225634/MAY-2026',  piNumber:'PI-FY-FY2082-2083-000000005', parentCID:'E003-B01-19', childCID:'E003-K01-43', cycleId:'c3', type:'service', description:'Monthly Recurring Charge'},
+
+  // Cycle 4 — new device install for K01-49 and K01-43; B01-50 service only
+  {txnNumber:'INST-201/CRM-156073',  piNumber:'PI-FY-FY2082-2083-000000006', parentCID:'E003-B01-19', childCID:'E003-K01-49', cycleId:'c4', type:'installation', description:'One Time Installation Charge (New Device)'},
+  {txnNumber:'INST-201/CRM-156073',  piNumber:'PI-FY-FY2082-2083-000000006', parentCID:'E003-B01-19', childCID:'E003-K01-49', cycleId:'c4', type:'device',       description:'One Time Device Charge (New Device)'},
+  {txnNumber:'INST-201/CRM-156073',  piNumber:'PI-FY-FY2082-2083-000000006', parentCID:'E003-B01-19', childCID:'E003-K01-49', cycleId:'c4', type:'service',      description:'Monthly Recurring Charge'},
+
+  {txnNumber:'SVC-225596/JUN-2026',  piNumber:'PI-FY-FY2082-2083-000000006', parentCID:'E003-B01-19', childCID:'E003-B01-50', cycleId:'c4', type:'service', description:'Monthly Recurring Charge'},
+
+  {txnNumber:'INST-202/CRM-225634',  piNumber:'PI-FY-FY2082-2083-000000006', parentCID:'E003-B01-19', childCID:'E003-K01-43', cycleId:'c4', type:'installation', description:'One Time Installation Charge (New Device)'},
+  {txnNumber:'INST-202/CRM-225634',  piNumber:'PI-FY-FY2082-2083-000000006', parentCID:'E003-B01-19', childCID:'E003-K01-43', cycleId:'c4', type:'device',       description:'One Time Device Charge (New Device)'},
+  {txnNumber:'INST-202/CRM-225634',  piNumber:'PI-FY-FY2082-2083-000000006', parentCID:'E003-B01-19', childCID:'E003-K01-43', cycleId:'c4', type:'service',      description:'Monthly Recurring Charge'},
+
+  // Cycles 5–7 — service only all CIDs
+  {txnNumber:'SVC-156073/JUL-2026',  piNumber:'PI-FY-FY2082-2083-000000007', parentCID:'E003-B01-19', childCID:'E003-K01-49', cycleId:'c5', type:'service', description:'Monthly Recurring Charge'},
+  {txnNumber:'SVC-225596/JUL-2026',  piNumber:'PI-FY-FY2082-2083-000000007', parentCID:'E003-B01-19', childCID:'E003-B01-50', cycleId:'c5', type:'service', description:'Monthly Recurring Charge'},
+  {txnNumber:'SVC-225634/JUL-2026',  piNumber:'PI-FY-FY2082-2083-000000007', parentCID:'E003-B01-19', childCID:'E003-K01-43', cycleId:'c5', type:'service', description:'Monthly Recurring Charge'},
+
+  {txnNumber:'SVC-156073/AUG-2026',  piNumber:'PI-FY-FY2082-2083-000000008', parentCID:'E003-B01-19', childCID:'E003-K01-49', cycleId:'c6', type:'service', description:'Monthly Recurring Charge'},
+  {txnNumber:'SVC-225596/AUG-2026',  piNumber:'PI-FY-FY2082-2083-000000008', parentCID:'E003-B01-19', childCID:'E003-B01-50', cycleId:'c6', type:'service', description:'Monthly Recurring Charge'},
+  {txnNumber:'SVC-225634/AUG-2026',  piNumber:'PI-FY-FY2082-2083-000000008', parentCID:'E003-B01-19', childCID:'E003-K01-43', cycleId:'c6', type:'service', description:'Monthly Recurring Charge'},
+
+  {txnNumber:'SVC-156073/SEP-2026',  piNumber:'PI-FY-FY2082-2083-000000009', parentCID:'E003-B01-19', childCID:'E003-K01-49', cycleId:'c7', type:'service', description:'Monthly Recurring Charge'},
+  {txnNumber:'SVC-225596/SEP-2026',  piNumber:'PI-FY-FY2082-2083-000000009', parentCID:'E003-B01-19', childCID:'E003-B01-50', cycleId:'c7', type:'service', description:'Monthly Recurring Charge'},
+  {txnNumber:'SVC-225634/SEP-2026',  piNumber:'PI-FY-FY2082-2083-000000009', parentCID:'E003-B01-19', childCID:'E003-K01-43', cycleId:'c7', type:'service', description:'Monthly Recurring Charge'},
+];
+
 const ADJ_TYPES = [
-  {key:'outage', label:'Service Outage',   badge:'badge-danger',  desc:'Network downtime \u2014 specify affected date ranges'},
-  {key:'unused', label:'Service Unused',   badge:'badge-default', desc:'Service not used \u2014 specify unused date ranges'},
-  {key:'device', label:'Device Charge',    badge:'badge-info',    desc:'Revise per-device pricing'},
-  {key:'otc',    label:'OTC / Install',    badge:'badge-teal',    desc:'Adjust one-time installation fee'},
-  {key:'renewal',label:'Contract Renewal', badge:'badge-violet',  desc:'Renewal \u2014 modify forward MRC'},
-  {key:'other',  label:'Other',            badge:'badge-default', desc:'Custom / miscellaneous charge'},
+  {key:'outage', label:'Service Outage',   badge:'b-danger',  desc:'Network downtime — specify date ranges'},
+  {key:'unused', label:'Service Unused',   badge:'b-default', desc:'Service not used — specify date ranges'},
+  {key:'device', label:'Device Charge',    badge:'b-info',    desc:'Revise per-device pricing'},
+  {key:'otc',    label:'OTC / Install',    badge:'b-teal',    desc:'Adjust one-time installation charge'},
+  {key:'renewal',label:'Contract Renewal', badge:'b-violet',  desc:'Update forward MRC on renewal'},
+  {key:'other',  label:'Other',            badge:'b-gray',    desc:'Custom / miscellaneous adjustment'},
 ];
 
 const REASONS = {
-  outage: [{id:1,t:'Fiber Cut'},{id:2,t:'Device Issue'},{id:3,t:'Trunk Issue'},{id:4,t:'Delay Escalation'},{id:6,t:'Office Maintenance'},{id:12,t:'Nationwide Outage'}],
-  unused: [{id:5,t:'Office Closed Temporary'},{id:7,t:'Education Seasonal'},{id:8,t:'Customer Retention'},{id:9,t:'Competitive Offer'},{id:11,t:'Customer Downsize'}],
-  device: [{id:10,t:'Bandwidth Changes'},{id:11,t:'Customer Downsize'}],
-  otc:    [{id:8,t:'Customer Retention'},{id:9,t:'Competitive Offer'}],
+  outage:[{id:1,t:'Fiber Cut'},{id:2,t:'Device Issue'},{id:3,t:'Trunk Issue'},{id:4,t:'Delay Escalation'},{id:6,t:'Office Maintenance'}],
+  unused:[{id:5,t:'Office Closed Temporary'},{id:7,t:'Education Seasonal'},{id:8,t:'Customer Retention'},{id:9,t:'Competitive Offer'},{id:11,t:'Customer Downsize'}],
+  device:[{id:10,t:'Bandwidth Changes'},{id:11,t:'Customer Downsize'}],
+  otc:   [{id:8,t:'Customer Retention'},{id:9,t:'Competitive Offer'}],
   renewal:[{id:7,t:'Education Seasonal'},{id:8,t:'Customer Retention'},{id:10,t:'Bandwidth Changes'},{id:11,t:'Customer Downsize'}],
-  other:  [{id:1,t:'Fiber Cut'},{id:2,t:'Device Issue'},{id:4,t:'Delay Escalation'},{id:7,t:'Education Seasonal'},{id:8,t:'Customer Retention'},{id:9,t:'Competitive Offer'},{id:10,t:'Bandwidth Changes'}],
+  other: [{id:4,t:'Delay Escalation'},{id:7,t:'Education Seasonal'},{id:8,t:'Customer Retention'},{id:9,t:'Competitive Offer'}],
 };
 
-const EXISTING_ADJ=[{cid:'E003-K01-49',type:'outage',start:'2026-03-27',end:'2026-03-29'}];
+const EXISTING_ADJ = [{cid:'E003-K01-49',type:'outage',start:'2026-03-27',end:'2026-03-29'}];
 
-let state={step:1,parentCID:'',cycle:null,selectedCIDs:[],adjData:{},mode:'individual'};
-let drIdx=0;
-let bulkState={entries:[{id:0,start:'',end:'',reason:''}],type:'',collapsed:false};
-let bulkEntryIdx=1;
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let state = {step:1, account:null, cycle:null, selectedCIDs:[], adjData:{}, mode:'individual', _expandedCIDs: new Set()};
+let eidx = 0;
+let bulkState = {entries:[{id:0,start:'',end:'',reason:''}], type:'', open:true};
+let beidx = 1;
 
-const STEPS=[{n:1,label:'Parent CID'},{n:2,label:'Billing Cycle'},{n:3,label:'Select CIDs'},{n:4,label:'Adjustments'},{n:5,label:'Preview'}];
+const STEPS = [
+  {n:1,label:'Find Account',sub:''},
+  {n:2,label:'Billing Cycle',sub:''},
+  {n:3,label:'Branch CIDs',sub:''},
+  {n:4,label:'Adjustments',sub:''},
+  {n:5,label:'Preview & Submit',sub:''},
+];
 
-function renderStepper(){
-  document.getElementById('stepper').innerHTML=STEPS.map(s=>{
-    const cls=s.n<state.step?'done':s.n===state.step?'active':'';
-    return`<div class="step-item ${cls}"><span class="step-num">${s.n<state.step?'&#10003;':s.n}</span>${s.label}</div>`;
-  }).join('');
-  const ctx=document.getElementById('ctx-bar');
-  if(state.parentCID){ctx.style.display='flex';document.getElementById('sb-parent').textContent=state.parentCID;document.getElementById('sb-cycle').textContent=state.cycle?.label||'\u2014';document.getElementById('sb-cids').textContent=state.selectedCIDs.length?state.selectedCIDs.length+' selected':'\u2014';}
-  else ctx.style.display='none';
-}
-function goTo(n){
-  if(n===2&&!state.parentCID){shake('sec-1');return;}
-  if(n===3&&!state.cycle){shake('sec-2');return;}
-  if(n===4&&!state.selectedCIDs.length){shake('sec-3');return;}
-  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-  document.getElementById('sec-'+n).classList.add('active');
-  state.step=n;renderStepper();
-  if(n===2)renderCycles();
-  if(n===3)renderCIDList();
-  if(n===4){renderAdjBlocks();renderModeUI();}
-  if(n===5)renderPreview();
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-function shake(id){const el=document.getElementById(id);el.style.animation='none';el.offsetHeight;el.style.animation='shake .3s ease';setTimeout(()=>el.style.animation='',400);}
-
-function onParentChange(){state.parentCID=document.getElementById('parent-cid').value;state.cycle=null;state.selectedCIDs=[];state.adjData={};renderStepper();}
-
-function renderCycles(){
-  const data=CID_DATA[state.parentCID];if(!data)return;
-  document.getElementById('cycle-list').innerHTML=data.cycles.map(c=>`
-    <div class="info-box ${state.cycle?.id===c.id?'selected':''}" onclick="selectCycle('${c.id}')">
-      <div class="info-box-icon">&#128197;</div>
-      <div class="info-box-content" style="display:flex;align-items:center;justify-content:space-between;">
-        <div>
-          <div class="info-box-text">${c.label}</div>
-          <div class="info-box-number">${c.fiscal}</div>
-          <div style="margin-top:4px;font-size:11px;color:#777;">${c.hasInstall?'<span style="color:var(--primary);font-weight:600;">Includes installation &amp; device charges</span>':'Service charge only'}</div>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px;">
-          <span class="label label-warning">Unbilled</span>
-          ${c.hasInstall?'<span class="label label-primary">1st Cycle</span>':'<span class="label label-default">Recurring</span>'}
-          <div class="icheck ${state.cycle?.id===c.id?'on':''}"></div>
-        </div>
-      </div>
-    </div>`).join('');
-  document.getElementById('btn-2').disabled=!state.cycle;
-}
-function selectCycle(id){state.cycle=CID_DATA[state.parentCID].cycles.find(c=>c.id===id);state.selectedCIDs=[];state.adjData={};document.getElementById('btn-2').disabled=false;renderCycles();}
-
-function renderCIDList(){
-  const data=CID_DATA[state.parentCID];if(!data)return;
-  const cd=daysBetween(state.cycle.start,state.cycle.end);
-  document.getElementById('cid-list').innerHTML=data.children.map(c=>{
-    const sel=state.selectedCIDs.includes(c.id);
-    const svc=Math.round((c.mrc/30)*cd);
-    const hasI=state.cycle.hasInstall;
-    const total=hasI?(c.install+c.deviceCharge+svc):svc;
-    return`<div class="cid-card ${sel?'selected':''}">
-      <div class="cid-card-header" onclick="toggleCID('${c.id}')">
-        <div class="icheck ${sel?'on':''}"></div>
-        <div style="flex:1;"><span class="mono" style="font-size:13px;font-weight:600;color:var(--primary);">${c.id}</span><span style="color:#777;font-size:12px;margin-left:6px;">&middot; ${c.label}</span></div>
-        <div style="text-align:right;"><div style="font-size:11px;color:#777;">Total charges</div><div class="mono" style="font-size:14px;font-weight:700;">NPR ${total.toLocaleString()}</div></div>
-      </div>
-      <div class="cid-charges" style="grid-template-columns:${hasI?'1fr 1fr 1fr':'1fr'};">
-        ${hasI?`<div class="charge-cell"><div class="charge-lbl">Installation</div><div class="charge-val">NPR ${c.install.toLocaleString()}</div><div class="charge-sub">One-time</div></div>`:''}
-        ${hasI?`<div class="charge-cell"><div class="charge-lbl">Device Charge</div><div class="charge-val">NPR ${c.deviceCharge.toLocaleString()}</div><div class="charge-sub">${c.devices.length} device${c.devices.length>1?'s':''}</div></div>`:''}
-        <div class="charge-cell"><div class="charge-lbl">Service Charge</div><div class="charge-val" style="color:var(--primary);">NPR ${svc.toLocaleString()}</div><div class="charge-sub">NPR ${c.mrc.toLocaleString()}/mo &middot; ${cd}d</div></div>
-      </div>
+// ─── STEPPER ──────────────────────────────────────────────────────────────────
+function renderStepper() {
+  document.getElementById('stepper').innerHTML = STEPS.map(s => {
+    const cls = s.n < state.step ? 'done' : s.n === state.step ? 'active' : '';
+    return `<div class="step ${cls}">
+      <span class="step-n">${s.n < state.step ? '✓' : s.n}</span>
+      <span class="step-label">${s.label}</span>
     </div>`;
   }).join('');
-  document.getElementById('btn-3').disabled=!state.selectedCIDs.length;
-}
-function toggleCID(id){const i=state.selectedCIDs.indexOf(id);if(i>=0)state.selectedCIDs.splice(i,1);else state.selectedCIDs.push(id);document.getElementById('btn-3').disabled=!state.selectedCIDs.length;renderCIDList();}
-function selectAllCIDs(){state.selectedCIDs=CID_DATA[state.parentCID].children.map(c=>c.id);document.getElementById('btn-3').disabled=false;renderCIDList();}
-function clearAllCIDs(){state.selectedCIDs=[];document.getElementById('btn-3').disabled=true;renderCIDList();}
-
-function setMode(m){state.mode=m;renderModeUI();}
-function renderModeUI(){
-  const iB=document.getElementById('mode-individual-btn'),bB=document.getElementById('mode-bulk-btn');
-  if(state.mode==='bulk'){
-    bB.className='mode-tab active';iB.className='mode-tab';
-    document.getElementById('mode-desc').textContent='Apply the same service outage or unused period to all selected CIDs at once.';
-    document.getElementById('bulk-section').style.display='block';
-    document.getElementById('individual-section').style.display='none';
-    renderBulkCIDTags();renderBulkEntries();
+  const ctx = document.getElementById('ctx-bar');
+  if (state.account) {
+    ctx.style.display = 'flex';
+    document.getElementById('sb-parent').textContent = state.account.parent;
+    document.getElementById('sb-uname').textContent  = state.account.uname;
+    document.getElementById('sb-cycle').textContent  = state.cycle ? state.cycle.label : '—';
+    document.getElementById('sb-pi').textContent     = state.cycle?.piNumbers?.[0] || '—';
+    document.getElementById('sb-cids').textContent   = state.selectedCIDs.length ? state.selectedCIDs.length + ' selected' : '—';
   } else {
-    iB.className='mode-tab active';bB.className='mode-tab';
-    document.getElementById('mode-desc').textContent='Each branch CID is configured independently.';
-    document.getElementById('bulk-section').style.display='none';
-    document.getElementById('individual-section').style.display='block';
+    ctx.style.display = 'none';
   }
 }
-function toggleBulkPanel(){bulkState.collapsed=!bulkState.collapsed;document.getElementById('bulk-panel').classList.toggle('collapsed',bulkState.collapsed);document.getElementById('bulk-chevron').innerHTML=bulkState.collapsed?'&#9660;':'&#9650;';}
-function renderBulkCIDTags(){
-  const data=CID_DATA[state.parentCID];
-  document.getElementById('bulk-cid-tags').innerHTML=state.selectedCIDs.map(id=>{const ch=data.children.find(c=>c.id===id);return`<span class="cid-tag">${id} <span style="color:#aaa;">&middot; ${ch?.label||''}</span></span>`;}).join('');
+function goTo(n) {
+  if (n===2 && !state.account) { shake('sec-1'); return; }
+  if (n===3 && !state.cycle)   { shake('sec-2'); return; }
+  if (n===4 && !state.selectedCIDs.length) { shake('sec-3'); return; }
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById('sec-'+n).classList.add('active');
+  state.step = n; renderStepper();
+  if (n===2) renderCycles();
+  if (n===3) { cidPage = 1; renderCIDList(); }
+  if (n===4) { renderModeUI(); renderAdjBlocks(); }
+  if (n===5) renderPreview();
+  window.scrollTo({top:0,behavior:'smooth'});
 }
-function renderBulkFields(){
-  const tk=document.getElementById('bulk-type').value;bulkState.type=tk;
-  const f=document.getElementById('bulk-outage-fields');
-  if(tk==='outage'||tk==='unused'){f.style.display='block';renderBulkEntries();}
-  else f.style.display='none';
+function shake(id) {
+  const el = document.getElementById(id);
+  el.style.animation='none'; el.offsetHeight;
+  el.style.animation='shake .3s ease';
+  setTimeout(()=>el.style.animation='',400);
 }
-function renderBulkEntries(){
-  const tk=document.getElementById('bulk-type').value||'outage';
-  const cs=state.cycle?.start||'',ce=state.cycle?.end||'';
-  document.getElementById('bulk-entry-list').innerHTML=bulkState.entries.map((e,idx)=>`
-    <div class="period-block">
+
+// ─── STEP 1: SEARCH ───────────────────────────────────────────────────────────
+let searchDebounce;
+function runSearch() {
+  clearTimeout(searchDebounce);
+  searchDebounce = setTimeout(_doSearch, 180);
+}
+function _doSearch() {
+  const sCid   = (document.getElementById('s-cid').value   || '').toLowerCase().trim();
+  const sUname = (document.getElementById('s-uname').value || '').toLowerCase().trim();
+  const sTxn   = (document.getElementById('s-txn').value   || '').toLowerCase().trim();
+  const sPi    = (document.getElementById('s-pi').value    || '').toLowerCase().trim();
+  const sFY    = (document.getElementById('s-fy').value    || '').trim();
+  const sFrom  = document.getElementById('s-from').value;
+  const sTo    = document.getElementById('s-to').value;
+
+  if (!sCid && !sUname && !sTxn && !sPi && !sFY && !sFrom && !sTo) {
+    document.getElementById('search-results').innerHTML = '';
+    document.getElementById('search-hint').textContent = 'Enter at least one search field';
+    return;
+  }
+
+  const results = [];
+  Object.values(ACCOUNTS).forEach(acc => {
+    let match = true;
+    let matchedChild = null;      // specific child CID to pre-select (if search implies one)
+    let matchedCycles = null;     // cycle IDs narrowed by date-range or PI search
+
+    // ── CID filter ──────────────────────────────────────────────────────────
+    if (sCid) {
+      if (acc.parent.toLowerCase().includes(sCid)) {
+        // parent match — no child implied
+      } else {
+        const child = acc.children.find(c => c.id.toLowerCase().includes(sCid));
+        if (child) { matchedChild = child; }
+        else { match = false; }
+      }
+    }
+
+    // ── UName filter ────────────────────────────────────────────────────────
+    if (sUname && match) {
+      const unameMatch = acc.uname.toLowerCase().includes(sUname) ||
+        acc.children.some(c => c.uname.toLowerCase().includes(sUname));
+      if (!unameMatch) { match = false; }
+      else if (!matchedChild) {
+        const child = acc.children.find(c => c.uname.toLowerCase().includes(sUname));
+        if (child && !acc.uname.toLowerCase().includes(sUname)) matchedChild = child;
+      }
+    }
+
+    // ── Transaction Number filter ────────────────────────────────────────────
+    // txnNumber can repeat in DB — multiple rows per txn. We find the distinct
+    // child CIDs that have that txn number, and the cycle(s) it belongs to.
+    if (sTxn && match) {
+      const matchingTxns = TRANSACTIONS.filter(t =>
+        t.parentCID === acc.parent && t.txnNumber.toLowerCase().includes(sTxn)
+      );
+      if (!matchingTxns.length) { match = false; }
+      else {
+        // Distinct child CIDs
+        const cids = [...new Set(matchingTxns.map(t => t.childCID))];
+        // If only one child CID is implied by this txn, pre-select it
+        if (cids.length === 1 && !matchedChild) {
+          matchedChild = acc.children.find(c => c.id === cids[0]) || null;
+        }
+        // Narrow to cycles referenced by this txn
+        const cycleIds = [...new Set(matchingTxns.map(t => t.cycleId))];
+        matchedCycles = matchedCycles ? matchedCycles.filter(id => cycleIds.includes(id)) : cycleIds;
+      }
+    }
+
+    // ── PI Number filter ─────────────────────────────────────────────────────
+    // PI is unique. One PI covers multiple transactions (multiple CIDs).
+    // Finding a PI shows the parent account + the specific cycle(s) for that PI.
+    if (sPi && match) {
+      const matchingTxns = TRANSACTIONS.filter(t =>
+        t.parentCID === acc.parent && t.piNumber.toLowerCase().includes(sPi)
+      );
+      if (!matchingTxns.length) {
+        // Also check cycle.piNumbers array directly
+        const matchingCycles = acc.cycles.filter(c =>
+          c.piNumbers && c.piNumbers.some(p => p.toLowerCase().includes(sPi))
+        );
+        if (!matchingCycles.length) { match = false; }
+        else {
+          const cycleIds = matchingCycles.map(c => c.id);
+          matchedCycles = matchedCycles ? matchedCycles.filter(id => cycleIds.includes(id)) : cycleIds;
+        }
+      } else {
+        const cycleIds = [...new Set(matchingTxns.map(t => t.cycleId))];
+        matchedCycles = matchedCycles ? matchedCycles.filter(id => cycleIds.includes(id)) : cycleIds;
+        // PI covers multiple CIDs — don't pre-select a single child
+        const cids = [...new Set(matchingTxns.map(t => t.childCID))];
+        if (cids.length === 1 && !matchedChild) {
+          matchedChild = acc.children.find(c => c.id === cids[0]) || null;
+        }
+      }
+    }
+
+    // ── Fiscal Year filter ───────────────────────────────────────────────────
+    // Narrows matchedCycles to those in the selected FY; if none remain, drop the account.
+    if (sFY && match) {
+      const fyCycles = acc.cycles.filter(c => c.fiscal === sFY).map(c => c.id);
+      if (!fyCycles.length) { match = false; }
+      else {
+        matchedCycles = matchedCycles ? matchedCycles.filter(id => fyCycles.includes(id)) : fyCycles;
+        if (!matchedCycles.length) match = false;
+      }
+    }
+
+    // ── Billing Period date range filter ─────────────────────────────────────
+    // "Loose" match: if user picks 02-15 to 04-15, show cycles whose months
+    // overlap that range (i.e. cycle.start <= sTo AND cycle.end >= sFrom)
+    if ((sFrom || sTo) && match) {
+      const cycleCandidates = acc.cycles.filter(c => {
+        if (sFrom && sTo) return c.start <= sTo && c.end >= sFrom;
+        if (sFrom)        return c.end >= sFrom;
+        if (sTo)          return c.start <= sTo;
+        return true;
+      });
+      if (!cycleCandidates.length) { match = false; }
+      else {
+        const cycleIds = cycleCandidates.map(c => c.id);
+        matchedCycles = matchedCycles ? matchedCycles.filter(id => cycleIds.includes(id)) : cycleIds;
+      }
+    }
+
+    if (match) results.push({ acc, matchedChild, matchedCycles });
+  });
+
+  const el = document.getElementById('search-results');
+  if (!results.length) {
+    el.innerHTML = `<div class="callout danger">No matching accounts found.</div>`;
+    document.getElementById('search-hint').textContent = 'No results';
+    return;
+  }
+
+  el.innerHTML = `<div class="search-results">${results.map(r => {
+    const acc = r.acc;
+    const mc  = r.matchedChild;
+    const mcy = r.matchedCycles;
+    const cycleNote = mcy
+      ? acc.cycles.filter(c=>mcy.includes(c.id)).map(c=>`<span style="font-size:10px;background:#e8f5fb;color:#0369a1;padding:1px 5px;border-radius:2px;">${c.label}</span>`).join(' ')
+      : '';
+    const isSelected = state.account?.parent===acc.parent;
+    return `<div class="sr-item ${isSelected?'active':''}"
+        onclick="selectAccount('${acc.parent}','${mc?mc.id:''}','${mcy?mcy.join(','):''}')"
+        title="Click to select this account">
+      <div style="flex:1;">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="sr-cid">${acc.parent}</span>
+          <span class="sr-uname">${acc.uname}</span>
+          ${mc?`<span style="font-size:10px;background:var(--primary);color:#fff;padding:1px 6px;border-radius:2px;font-family:'IBM Plex Mono',monospace;">→ ${mc.id}</span>`:''}
+        </div>
+        <div class="sr-meta" style="margin-top:3px;">${acc.location} &middot; ${acc.children.length} branch CIDs &middot; ${acc.paymentTerm}
+          ${mc?`&middot; <em style="color:var(--primary);">${mc.uname} · ${mc.label}</em>`:''}
+        </div>
+        ${cycleNote?`<div style="margin-top:4px;display:flex;flex-wrap:wrap;gap:3px;">${cycleNote}</div>`:''}
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+        <span class="sr-badge">${acc.children.length} CIDs</span>
+        ${isSelected
+          ? `<span style="font-size:10px;background:var(--success);color:#fff;padding:2px 7px;border-radius:2px;font-weight:700;">✓ Selected</span>`
+          : `<span style="font-size:10px;color:var(--primary);padding:2px 6px;border-radius:2px;border:1px solid var(--primary);font-weight:600;">Select →</span>`
+        }
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+  document.getElementById('search-hint').textContent = results.length + ' result' + (results.length>1?'s':'') + ' found';
+}
+
+function selectAccount(parentCID, preSelectChildCID, preSelectCycles) {
+  state.account = ACCOUNTS[parentCID];
+  state.cycle = null; state.selectedCIDs = []; state.adjData = {};
+  state._preSelectCID    = preSelectChildCID || null;
+  state._preSelectCycles = preSelectCycles   ? preSelectCycles.split(',').filter(Boolean) : null;
+  const acc = state.account;
+  document.getElementById('sel-account').style.display = 'block';
+  let infoMsg = `✓ Selected: <strong class="mono">${acc.parent}</strong> &middot; <strong>${acc.uname}</strong> &middot; ${acc.location} &middot; ${acc.paymentTerm}`;
+  if (preSelectChildCID) {
+    infoMsg += ` &mdash; <span style="color:#fff;background:var(--primary);padding:1px 6px;border-radius:2px;font-size:11px;font-family:'IBM Plex Mono',monospace;">${preSelectChildCID}</span> will be pre-selected in Step 3`;
+  }
+  if (state._preSelectCycles?.length) {
+    const labels = acc.cycles.filter(c=>state._preSelectCycles.includes(c.id)).map(c=>c.label).join(', ');
+    infoMsg += ` &mdash; <span style="font-size:11px;color:#555;">Cycles highlighted: <strong>${labels}</strong></span>`;
+  }
+  document.getElementById('sel-account-info').innerHTML = infoMsg;
+  _doSearch(); renderStepper();
+}
+
+// ─── STEP 2: CYCLES ───────────────────────────────────────────────────────────
+function renderCycles() {
+  if (!state.account) return;
+  const highlighted = state._preSelectCycles || [];
+
+  // Populate fiscal year dropdown (deduplicated)
+  const fySelect = document.getElementById('fy-filter');
+  if (fySelect) {
+    const fyYears = [...new Set(state.account.cycles.map(c => c.fiscal))].sort();
+    // Only rebuild if options differ (avoid resetting selection)
+    const existing = [...fySelect.options].slice(1).map(o => o.value);
+    if (JSON.stringify(existing) !== JSON.stringify(fyYears)) {
+      while (fySelect.options.length > 1) fySelect.remove(1);
+      fyYears.forEach(fy => {
+        const opt = document.createElement('option'); opt.value = fy; opt.textContent = fy;
+        fySelect.appendChild(opt);
+      });
+    }
+  }
+  const selectedFY = fySelect ? fySelect.value : '';
+
+  const noteEl = document.getElementById('cycle-highlight-note');
+  if (noteEl) {
+    if (highlighted.length) {
+      const labels = state.account.cycles.filter(c=>highlighted.includes(c.id)).map(c=>c.label).join(', ');
+      noteEl.innerHTML = `<div class="callout warning" style="margin-bottom:12px;">⚡ Cycles matching your search: <strong>${labels}</strong> — select any cycle to proceed.</div>`;
+    } else {
+      noteEl.innerHTML = '';
+    }
+  }
+
+  const filteredCycles = state.account.cycles.filter(c => !selectedFY || c.fiscal === selectedFY);
+  const countEl = document.getElementById('cycle-count');
+  if (countEl) countEl.textContent = filteredCycles.length + ' cycle' + (filteredCycles.length!==1?'s':'') + (selectedFY ? ` in ${selectedFY}` : '');
+
+  document.getElementById('cycle-list').innerHTML = filteredCycles.map(c => {
+    const hasOTC = Object.values(c.charges).some(ch => ch.install || ch.device);
+    const sel = state.cycle?.id === c.id;
+    const days = daysBetween(c.start, c.end);
+    const isHighlighted = highlighted.includes(c.id);
+    // Build per-CID charge summary badges
+    const otcCIDs = Object.entries(c.charges)
+      .filter(([,ch]) => ch.install || ch.device)
+      .map(([cid]) => {
+        const child = state.account.children.find(x=>x.id===cid);
+        return child ? `<span style="font-size:10px;background:#e8f5fb;color:#0369a1;padding:1px 5px;border-radius:2px;font-family:'IBM Plex Mono',monospace;">${cid}</span>` : '';
+      }).join(' ');
+    return `<div class="cycle-card ${sel?'sel':''}" onclick="selectCycle('${c.id}')"
+        style="${isHighlighted&&!sel?'border-color:var(--warning);background:#fffdf0;':''} ">
+      <div class="cycle-card-hdr">
+        <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;">
+          <span class="cycle-dates">${c.label}</span>
+          ${isHighlighted?`<span style="font-size:10px;background:var(--warning);color:#fff;padding:1px 6px;border-radius:2px;font-weight:700;">MATCHED</span>`:''}
+        </div>
+        <div class="icheck ${sel?'on':''}"></div>
+      </div>
+      <div class="cycle-meta">
+        <span class="badge b-warning">Unbilled</span>
+        ${hasOTC ? '<span class="badge b-teal">Has OTC/Device</span>' : '<span class="badge b-gray">Service Only</span>'}
+        <span class="badge b-primary">${days}d</span>
+        <span class="badge b-default" style="background:#8e44ad;">${c.fiscal}</span>
+      </div>
+      ${hasOTC ? `<div style="margin-top:5px;font-size:11px;color:#666;">New devices/install for: {otcCIDs} </div>` : ''}
+      <div class="cycle-note">${c.fiscal} · ${c.piNumbers?.join(', ')||''} · ${c.start} → ${c.end}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('btn-2').disabled = !state.cycle;
+}
+function selectCycle(id) {
+  state.cycle = state.account.cycles.find(c => c.id === id);
+  state.selectedCIDs = []; state.adjData = {};
+  state._expandedCIDs = new Set();
+  renderCycles();
+}
+
+// ─── STEP 3: CIDs ─────────────────────────────────────────────────────────────
+const CID_PAGE_SIZE = 50;
+let cidPage = 1;
+
+function renderCIDList(resetPage) {
+  if (!state.account || !state.cycle) return;
+  if (resetPage) cidPage = 1;
+
+  // Show cycle dates/PI info banner
+  const cycleInfoEl = document.getElementById('cid-cycle-info');
+  if (cycleInfoEl) {
+    const c = state.cycle;
+    const hasOTC = Object.values(c.charges).some(ch => ch.install || ch.device);
+    cycleInfoEl.innerHTML = `<div style="background:#f7f9fb;border:1px solid var(--border);border-radius:var(--radius);padding:8px 14px;display:flex;flex-wrap:wrap;gap:14px;align-items:center;">
+      <span style="font-size:12px;font-weight:600;color:var(--primary);">${c.label}</span>
+      <span style="font-size:11px;color:#888;">${c.start} → ${c.end}</span>
+      <span style="font-size:11px;color:#888;">· ${c.fiscal}</span>
+      <span style="font-size:11px;color:#888;">· ${c.piNumbers?.join(', ')||''}</span>
+      ${hasOTC?`<span class="badge b-teal">Has OTC/Device</span>`:`<span class="badge b-gray">Service Only</span>`}
+      <span style="font-size:11px;color:#888;margin-left:auto;">${state.account.children.length} branch CIDs under ${state.account.parent}</span>
+    </div>`;
+  }
+
+  // Update header chip
+  const totalChip = document.getElementById('cid-total-chip');
+  if (totalChip) totalChip.textContent = state.account.children.length + ' total CIDs';
+
+  // Auto-select if user searched by child CID directly
+  if (state._preSelectCID && !state.selectedCIDs.includes(state._preSelectCID)) {
+    const exists = state.account.children.find(c => c.id === state._preSelectCID);
+    if (exists) {
+      state.selectedCIDs = [state._preSelectCID];
+      document.getElementById('btn-3').disabled = false;
+      const note = document.getElementById('cid-preselect-note');
+      if (note) {
+        note.style.display = 'block';
+        note.innerHTML = `ℹ <strong>${state._preSelectCID}</strong> was pre-selected from your search. You can add more CIDs or proceed.`;
+      }
+    }
+    state._preSelectCID = null;
+  }
+
+  const filter = (document.getElementById('cid-filter').value || '').toLowerCase();
+  const cd = daysBetween(state.cycle.start, state.cycle.end);
+  const charges = state.cycle.charges || {};
+  const cycleOrder = state.account.cycles.map(x=>x.id);
+  const cycleIdx   = cycleOrder.indexOf(state.cycle.id);
+
+  const filtered = state.account.children.filter(c =>
+    !filter ||
+    c.id.toLowerCase().includes(filter) ||
+    c.uname.toLowerCase().includes(filter) ||
+    c.label.toLowerCase().includes(filter) ||
+    c.location.toLowerCase().includes(filter)
+  );
+
+  // Filter count chip
+  const countEl = document.getElementById('cid-filter-count');
+  if (countEl) {
+    const selInFiltered = filtered.filter(c => state.selectedCIDs.includes(c.id)).length;
+    countEl.textContent = filter
+      ? `${filtered.length} match${filtered.length!==1?'es':''} · ${selInFiltered} selected`
+      : `${state.selectedCIDs.length} of ${filtered.length} selected`;
+  }
+
+  if (!filtered.length) {
+    document.getElementById('cid-list').innerHTML = `<div class="callout info">No CIDs match filter.</div>`;
+    document.getElementById('cid-load-more').style.display = 'none';
+    return;
+  }
+
+  // Pagination — render up to cidPage * CID_PAGE_SIZE rows
+  const visible = filtered.slice(0, cidPage * CID_PAGE_SIZE);
+  const hasMore = filtered.length > visible.length;
+
+  function buildCard(c) {
+    const sel = state.selectedCIDs.includes(c.id);
+    const svc = Math.round((c.mrc / 30) * cd);
+    const ch = charges[c.id] || {};
+    const hasOTC = !!(ch.install || ch.device);
+    const total = (ch.install||0) + (ch.device||0) + svc;
+    const eligibleDevices = c.devices.filter(d => cycleOrder.indexOf(d.cycleAdded||'c1') <= cycleIdx);
+    const newThisCycle = ch.newDevices || [];
+    const isOpen = state._expandedCIDs?.has(c.id);
+
+    return `<div class="cid-card ${sel?'sel':''}" id="cidcard-${c.id}">
+      <div class="cid-card-hdr">
+        <div class="icheck ${sel?'on':''}" onclick="toggleCID('${c.id}')" style="cursor:pointer;flex-shrink:0;"></div>
+        <div class="cid-info" onclick="toggleCID('${c.id}')" style="cursor:pointer;">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <span class="cid-name">${c.id}</span>
+            <span class="sr-uname">${c.uname}</span>
+            ${newThisCycle.length ? `<span class="badge b-teal" style="font-size:9px;">+${newThisCycle.length} new device${newThisCycle.length>1?'s':''}</span>` : ''}
+          </div>
+          <div class="cid-sub">
+            <span>${c.label}</span>
+            <span>📍 ${c.location}</span>
+            <span style="color:#aaa;">·</span>
+            ${hasOTC
+              ? `<span style="color:#888;">Install <strong class="mono" style="font-size:11px;color:#555;">NPR ${(ch.install||0).toLocaleString()}</strong> + Device <strong class="mono" style="font-size:11px;color:#555;">NPR ${(ch.device||0).toLocaleString()}</strong> + MRC <strong class="mono" style="font-size:11px;color:var(--primary);">NPR ${svc.toLocaleString()}</strong></span>`
+              : `<span style="color:#888;">MRC <strong class="mono" style="font-size:11px;color:var(--primary);">NPR ${svc.toLocaleString()}</strong>/mo</span>`
+            }
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+          <div style="text-align:right;">
+            <div style="font-size:10px;color:#aaa;margin-bottom:1px;">Total this cycle</div>
+            <div class="mono" style="font-size:14px;font-weight:700;">NPR ${total.toLocaleString()}</div>
+          </div>
+          <button class="cid-expand-btn ${isOpen?'open':''}" onclick="event.stopPropagation();toggleCIDDetails('${c.id}')" title="${isOpen?'Collapse':'Expand'} charge details">
+            ${isOpen?'▲':'▼'}
+          </button>
+        </div>
+      </div>
+      <div class="cid-charges-body ${isOpen?'open':''}">
+        <div class="cid-charges-row" style="grid-template-columns:${hasOTC?'1fr 1fr 1fr':'1fr'};">
+          ${hasOTC ? `<div class="charge-cell"><div class="charge-lbl">Installation (OTC)</div><div class="charge-val">NPR ${(ch.install||0).toLocaleString()}</div><div class="charge-sub">One-time charge</div></div>` : ''}
+          ${hasOTC ? `<div class="charge-cell"><div class="charge-lbl">Device Charge (OTC)</div><div class="charge-val">NPR ${(ch.device||0).toLocaleString()}</div><div class="charge-sub">${eligibleDevices.length} device${eligibleDevices.length!==1?'s':''} in this cycle</div></div>` : ''}
+          <div class="charge-cell"><div class="charge-lbl">Service / MRC</div><div class="charge-val primary">NPR ${svc.toLocaleString()}</div><div class="charge-sub">NPR ${c.mrc.toLocaleString()}/mo · ${cd}d · ${state.cycle.start} → ${state.cycle.end}</div></div>
+        </div>
+        ${eligibleDevices.length ? `
+        <div class="cid-device-list">
+          <div style="font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px;">Devices in this cycle (${eligibleDevices.length})</div>
+          ${eligibleDevices.map(dev=>{
+            const isNew = dev.cycleAdded === state.cycle.id;
+            return `<div class="cid-device-item">
+              <span style="width:9px;height:9px;border-radius:50%;background:${isNew?'var(--success)':'var(--primary-light)'};border:1px solid ${isNew?'#008d4c':'var(--primary)'};flex-shrink:0;"></span>
+              <span style="flex:1;">${dev.name}</span>
+              <span class="mono" style="color:#555;font-size:11px;">NPR ${dev.price.toLocaleString()}</span>
+              ${isNew?`<span class="badge b-teal" style="font-size:9px;">New this cycle</span>`:''}
+            </div>`;
+          }).join('')}
+        </div>` : ''}
+      </div>
+    </div>`;
+  }
+
+  document.getElementById('cid-list').innerHTML = visible.map(buildCard).join('');
+
+  // Load more button
+  const lmEl = document.getElementById('cid-load-more');
+  if (lmEl) {
+    if (hasMore) {
+      lmEl.style.display = 'block';
+      lmEl.innerHTML = `<button class="btn btn-default btn-sm" onclick="loadMoreCIDs()">
+        Load more <strong>${Math.min(CID_PAGE_SIZE, filtered.length - visible.length)}</strong> of ${filtered.length - visible.length} remaining CIDs ↓
+      </button>`;
+    } else {
+      lmEl.style.display = 'none';
+    }
+  }
+
+  document.getElementById('btn-3').disabled = !state.selectedCIDs.length;
+}
+
+function loadMoreCIDs() {
+  cidPage++;
+  renderCIDList();
+}
+function toggleCID(id) {
+  const i = state.selectedCIDs.indexOf(id);
+  if (i>=0) state.selectedCIDs.splice(i,1); else state.selectedCIDs.push(id);
+  document.getElementById('btn-3').disabled = !state.selectedCIDs.length;
+  renderCIDList();
+}
+function toggleCIDDetails(id) {
+  if (!state._expandedCIDs) state._expandedCIDs = new Set();
+  if (state._expandedCIDs.has(id)) state._expandedCIDs.delete(id);
+  else state._expandedCIDs.add(id);
+  renderCIDList();
+}
+function selectAllCIDs() {
+  // Select ALL children (not just the current visible page/filter)
+  state.selectedCIDs = state.account.children.map(c=>c.id);
+  document.getElementById('btn-3').disabled = false;
+  renderCIDList();
+}
+function clearAllCIDs() {
+  state.selectedCIDs = [];
+  document.getElementById('btn-3').disabled = true;
+  renderCIDList();
+}
+
+// ─── STEP 4: ADJUST ───────────────────────────────────────────────────────────
+function setMode(m) { state.mode = m; renderModeUI(); }
+function renderModeUI() {
+  document.getElementById('tab-ind').className = 'mode-tab' + (state.mode==='individual'?' active':'');
+  document.getElementById('tab-bulk').className = 'mode-tab' + (state.mode==='bulk'?' active':'');
+  document.getElementById('bulk-section').style.display = state.mode==='bulk' ? 'block' : 'none';
+  document.getElementById('individual-section').style.display = state.mode==='bulk' ? 'none' : 'block';
+  if (state.mode==='bulk') renderBulkCIDTags();
+}
+function toggleBulkPanel() {
+  bulkState.open = !bulkState.open;
+  document.getElementById('bulk-body').style.display = bulkState.open ? 'block' : 'none';
+  document.getElementById('bulk-chev').textContent = bulkState.open ? '▲' : '▼';
+}
+
+function renderBulkCIDTags() {
+  const cd = state.cycle ? daysBetween(state.cycle.start, state.cycle.end) : 0;
+  document.getElementById('bulk-cid-tags').innerHTML = state.selectedCIDs.map(id => {
+    const c = state.account.children.find(x=>x.id===id);
+    const ch = state.cycle?.charges?.[id] || {};
+    const svc = c ? Math.round((c.mrc / 30) * cd) : 0;
+    const total = (ch.install||0) + (ch.device||0) + svc;
+    return `<div style="background:#fff;border:1px solid var(--border);border-radius:3px;padding:7px 10px;margin-bottom:4px;width:100%;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--primary);">${id}</span>
+          <span style="font-size:11px;font-family:'IBM Plex Mono',monospace;color:#666;background:#f3f4f6;border-radius:2px;padding:1px 5px;">${c?.uname||''}</span>
+          <span style="font-size:11px;color:#888;">${c?.label||''}</span>
+          <span style="font-size:11px;color:#aaa;">📍 ${c?.location||''}</span>
+        </div>
+        <span style="font-size:11px;font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--text);">NPR ${total.toLocaleString()} this cycle</span>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:5px;flex-wrap:wrap;">
+        <span style="font-size:10px;color:#888;">MRC: <strong style="color:var(--primary);">NPR ${c?.mrc.toLocaleString()||'—'}/mo</strong></span>
+        ${ch.install?`<span style="font-size:10px;color:#888;">Install: <strong>NPR ${ch.install.toLocaleString()}</strong></span>`:''}
+        ${ch.device?`<span style="font-size:10px;color:#888;">Device: <strong>NPR ${ch.device.toLocaleString()}</strong></span>`:''}
+        <span style="font-size:10px;color:#888;">Service: <strong>NPR ${svc.toLocaleString()}</strong> (${cd}d)</span>
+        ${state.cycle?`<span style="font-size:10px;color:#aaa;">${state.cycle.start} → ${state.cycle.end}</span>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+function renderBulkFields() {
+  bulkState.type = document.getElementById('bulk-type').value;
+  document.getElementById('bulk-fields').style.display = bulkState.type ? 'block' : 'none';
+  if (bulkState.type) renderBulkEntries();
+}
+function renderBulkEntries() {
+  const tk = document.getElementById('bulk-type').value || 'outage';
+  const cs = state.cycle?.start||'', ce = state.cycle?.end||'';
+  document.getElementById('bulk-entries').innerHTML = bulkState.entries.map((e,idx) => `
+    <div class="period-row">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-        <strong style="font-size:12px;color:#777;">Period #${idx+1}</strong>
-        <button class="btn-remove" onclick="removeBulkEntry(${e.id})" ${bulkState.entries.length<=1?'disabled':''}>&#10005;</button>
+        <strong style="font-size:12px;color:#888;">Period #${idx+1}</strong>
+        <button class="btn btn-default btn-xs btn-icon" onclick="removeBulkEntry(${e.id})" ${bulkState.entries.length<=1?'disabled':''} style="color:var(--danger);">✕</button>
       </div>
       <div class="row">
-        <div class="col-4"><div class="form-group" style="margin-bottom:0;"><label style="font-size:12px;">Start Date</label>
-          <input class="form-control" type="date" value="${e.start}" min="${cs}" max="${ce}" onchange="updateBulkEntry(${e.id},'start',this.value)"/></div></div>
-        <div class="col-4"><div class="form-group" style="margin-bottom:0;"><label style="font-size:12px;">End Date</label>
-          <input class="form-control" type="date" value="${e.end}" min="${cs}" max="${ce}" onchange="updateBulkEntry(${e.id},'end',this.value)"/></div></div>
-        <div class="col-4"><div class="form-group" style="margin-bottom:0;"><label style="font-size:12px;">Reason</label>
-          <select class="form-control" onchange="updateBulkEntry(${e.id},'reason',this.value)">
-            <option value="">&#8212; Select &#8212;</option>${(REASONS[tk]||[]).map(r=>`<option value="${r.id}" ${e.reason==r.id?'selected':''}>${r.t}</option>`).join('')}
-          </select></div></div>
+        <div class="col3 fgrp" style="margin-bottom:0;"><label style="font-size:11px;">Start Date</label>
+          <input class="form-control" type="date" value="${e.start}" onchange="updateBulkEntry(${e.id},'start',this.value)"/></div>
+        <div class="col3 fgrp" style="margin-bottom:0;"><label style="font-size:11px;">End Date</label>
+          <input class="form-control" type="date" value="${e.end}" onchange="updateBulkEntry(${e.id},'end',this.value)"/></div>
+        <div class="col3 fgrp" style="margin-bottom:0;"><label style="font-size:11px;">Reason</label>
+          <select class="form-control" onchange="updateBulkEntry(${e.id},'reason',this.value);renderBulkEntries()">
+            <option value="">— Select —</option>
+            ${(REASONS[tk]||[]).map(r=>`<option value="${r.id}" ${e.reason==r.id?'selected':''}>${r.t}</option>`).join('')}
+            <option value="other" ${e.reason==='other'?'selected':''}>Other</option>
+          </select></div>
       </div>
+      ${e.reason==='other'?`<div class="fgrp" style="margin-top:8px;margin-bottom:0;"><label style="font-size:11px;">Remarks <span style="color:var(--danger);">*</span> <span style="font-weight:400;color:#aaa;">required when reason is Other</span></label><input class="form-control" type="text" placeholder="Describe the reason…" value="${e.otherRemarks||''}" oninput="updateBulkEntry(${e.id},'otherRemarks',this.value)"/></div>`:''}
     </div>`).join('');
 }
-function addBulkEntry(){bulkState.entries.push({id:bulkEntryIdx++,start:'',end:'',reason:''});renderBulkEntries();}
-function removeBulkEntry(id){if(bulkState.entries.length<=1)return;bulkState.entries=bulkState.entries.filter(e=>e.id!==id);renderBulkEntries();}
-function updateBulkEntry(id,f,v){const e=bulkState.entries.find(x=>x.id===id);if(e){e[f]=v;}renderBulkEntries();}
-
-function applyBulk(){
-  const tk=bulkState.type||document.getElementById('bulk-type').value;
-  if(!tk){alert('Please select an adjustment type.');return;}
-  const data=CID_DATA[state.parentCID];
-  let html='';
-  state.selectedCIDs.forEach(cid=>{
+function addBulkEntry() { bulkState.entries.push({id:beidx++,start:'',end:'',reason:''}); renderBulkEntries(); }
+function removeBulkEntry(id) { if(bulkState.entries.length<=1)return; bulkState.entries=bulkState.entries.filter(e=>e.id!==id); renderBulkEntries(); }
+function updateBulkEntry(id,f,v) { const e=bulkState.entries.find(x=>x.id===id); if(e) e[f]=v; }
+function clearBulk() {
+  bulkState={entries:[{id:0,start:'',end:'',reason:''}],type:'',open:true};
+  beidx=1;
+  document.getElementById('bulk-type').value='';
+  document.getElementById('bulk-applied').innerHTML='';
+  renderBulkFields();
+}
+function applyBulk() {
+  const tk = bulkState.type || document.getElementById('bulk-type').value;
+  if (!tk) { alert('Please select an adjustment type.'); return; }
+  state.selectedCIDs.forEach(cid => {
     initAdjData(cid);
-    const child=data.children.find(c=>c.id===cid);
-    const d=state.adjData[cid][tk];
-    d.enabled=true;
-    d.entries=bulkState.entries.map(e=>({id:drIdx++,start:e.start,end:e.end,reason:e.reason}));
-    const totalDays=bulkState.entries.reduce((s,e)=>s+(e.start&&e.end?daysBetween(e.start,e.end):0),0);
-    const adjAmt=parseFloat((child.mrc/30*totalDays).toFixed(2));
-    const ti=ADJ_TYPES.find(t=>t.key===tk);
-    html+=`<div style="display:flex;align-items:center;justify-content:space-between;padding:7px 10px;background:#f9f9f9;border:1px solid var(--border);border-radius:3px;margin-bottom:5px;">
-      <div><span class="mono" style="font-size:12px;font-weight:600;color:var(--primary);">${cid}</span>
-      <span style="font-size:12px;color:#777;margin-left:6px;">&middot; ${child.label}</span>
-      <span class="label ${ti.badge}" style="margin-left:8px;">${ti.label}</span></div>
-      <span class="mono" style="font-size:13px;font-weight:700;color:var(--success);">&#8722; NPR ${fmtAmt(adjAmt)}</span>
-    </div>`;
+    const d = state.adjData[cid][tk];
+    d.enabled = true;
+    d.entries = bulkState.entries.map(e => ({id:eidx++, start:e.start, end:e.end, reason:e.reason}));
   });
-  document.getElementById('bulk-results').innerHTML=`<div class="callout callout-success">
-    <strong>&#10003; Bulk adjustment applied to ${state.selectedCIDs.length} CID${state.selectedCIDs.length>1?'s':''}.</strong>
-    <div style="margin-top:10px;">${html}</div>
-    <p style="font-size:12px;color:#5a7a5a;margin-top:8px;">Switch to <strong>Individual</strong> mode to fine-tune per CID.</p>
+  const ti = ADJ_TYPES.find(t=>t.key===tk);
+  const html = state.selectedCIDs.map(cid => {
+    const child = state.account.children.find(c=>c.id===cid);
+    const ch = state.cycle?.charges?.[cid] || {};
+    const cd2 = state.cycle ? daysBetween(state.cycle.start, state.cycle.end) : 0;
+    const svc = child ? Math.round((child.mrc/30)*cd2) : 0;
+    const td = bulkState.entries.reduce((s,e)=>s+(e.start&&e.end?daysBetween(e.start,e.end):0),0);
+    const amt = parseFloat((child.mrc/30*td).toFixed(2));
+    const periods = bulkState.entries.filter(e=>e.start&&e.end).map((e,i)=>`<span style="font-size:10px;background:#e8f5fb;color:#0369a1;padding:1px 6px;border-radius:2px;">#${i+1}: ${e.start} → ${e.end} (${daysBetween(e.start,e.end)}d)</span>`).join(' ');
+    return `<div style="background:#f9fafb;border:1px solid var(--border);border-radius:3px;padding:8px 12px;margin-bottom:5px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-bottom:4px;">
+        <div style="display:flex;align-items:center;gap:7px;">
+          <span class="mono" style="font-size:12px;font-weight:700;color:var(--primary);">${cid}</span>
+          <span style="font-size:11px;color:#888;">${child?.uname||''} · ${child?.label||''}</span>
+          <span class="badge ${ti.badge}">${ti.label}</span>
+        </div>
+        <span class="mono" style="font-size:13px;font-weight:700;color:var(--success);">− NPR ${fmt(amt)}</span>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:4px;">
+        <span style="font-size:10px;color:#888;">MRC: <strong>NPR ${child?.mrc.toLocaleString()||'—'}/mo</strong></span>
+        <span style="font-size:10px;color:#888;">Service this cycle: <strong>NPR ${svc.toLocaleString()}</strong></span>
+        <span style="font-size:10px;color:#888;">Outage days: <strong>${td}d</strong></span>
+      </div>
+      <div style="display:flex;gap:4px;flex-wrap:wrap;">${periods}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('bulk-applied').innerHTML = `<div class="callout success">
+    <strong>✓ Applied to ${state.selectedCIDs.length} CID${state.selectedCIDs.length>1?'s':''}.</strong>
+    <div style="margin-top:8px;">${html}</div>
+    <div style="font-size:11px;color:#166534;margin-top:6px;">Switch to Individual to fine-tune per CID.</div>
   </div>`;
   renderAdjBlocks();
 }
-function clearBulk(){bulkState={entries:[{id:0,start:'',end:'',reason:''}],type:'',collapsed:false};bulkEntryIdx=1;document.getElementById('bulk-type').value='';document.getElementById('bulk-results').innerHTML='';renderBulkFields();}
 
-function initAdjData(cid){
-  if(!state.adjData[cid])state.adjData[cid]={};
-  ADJ_TYPES.forEach(t=>{
-    if(!state.adjData[cid][t.key]){
-      const base={enabled:false,devicePrices:{},otcAmount:null,renewalMRC:null,otherAmount:0,reason:'',remarks:''};
-      if(t.key==='outage'||t.key==='unused')base.entries=[{id:drIdx++,start:'',end:'',reason:''}];
-      state.adjData[cid][t.key]=base;
+// ─── INIT ADJ DATA ────────────────────────────────────────────────────────────
+function initAdjData(cid) {
+  if (!state.adjData[cid]) state.adjData[cid] = {};
+  ADJ_TYPES.forEach(t => {
+    if (!state.adjData[cid][t.key]) {
+      const base = {enabled:false, reason:'', remarks:'', devicePrices:{}, otcAmount:null, renewalMRC:null, otherAmount:0};
+      if (t.key==='outage'||t.key==='unused') base.entries = [{id:eidx++,start:'',end:'',reason:''}];
+      state.adjData[cid][t.key] = base;
     }
   });
 }
 
-function renderAdjBlocks(){
-  const data=CID_DATA[state.parentCID];
-  const cd=daysBetween(state.cycle.start,state.cycle.end);
-  state.selectedCIDs.forEach(cid=>initAdjData(cid));
-  document.getElementById('adj-blocks').innerHTML=state.selectedCIDs.map(cid=>{
-    const child=data.children.find(c=>c.id===cid);if(!child)return'';
-    const svc=Math.round((child.mrc/30)*cd);
-    const ac=ADJ_TYPES.filter(t=>state.adjData[cid]?.[t.key]?.enabled).length;
-    return`<div class="cid-adj-block">
-      <div class="cid-adj-block-hdr">
-        <div><span class="mono" style="font-size:13px;font-weight:700;">${cid}</span><span style="font-size:12px;opacity:.85;margin-left:8px;">&middot; ${child.label}</span></div>
-        <span>${ac?`<span class="badge badge-warning">${ac} type${ac>1?'s':''} active</span>`:'<span style="font-size:12px;opacity:.7;">No adjustments yet</span>'}</span>
-      </div>
-      <div class="cid-adj-block-body">
-        <div class="charge-row" style="grid-template-columns:${state.cycle.hasInstall?'1fr 1fr 1fr':'1fr'};display:grid;">
-          ${state.cycle.hasInstall?`<div class="charge-row-item"><div class="charge-lbl">Installation</div><div class="charge-val">NPR ${child.install.toLocaleString()}</div></div>`:''}
-          ${state.cycle.hasInstall?`<div class="charge-row-item"><div class="charge-lbl">Device</div><div class="charge-val">NPR ${child.deviceCharge.toLocaleString()}</div></div>`:''}
-          <div class="charge-row-item"><div class="charge-lbl">Service (this cycle)</div><div class="charge-val" style="color:var(--primary);">NPR ${svc.toLocaleString()}</div></div>
+// ─── RENDER ADJ BLOCKS (TABULAR) ──────────────────────────────────────────────
+function renderAdjBlocks() {
+  if (!state.account || !state.cycle) return;
+  const cd = daysBetween(state.cycle.start, state.cycle.end);
+  state.selectedCIDs.forEach(cid => initAdjData(cid));
+  document.getElementById('adj-blocks').innerHTML = state.selectedCIDs.map(cid => {
+    const child = state.account.children.find(c=>c.id===cid);
+    if (!child) return '';
+    const ch = state.cycle.charges[cid] || {};
+    const svc = Math.round((child.mrc/30)*cd);
+    const activeCount = ADJ_TYPES.filter(t=>state.adjData[cid]?.[t.key]?.enabled).length;
+    return `<div class="cid-block">
+      <div class="cid-block-hdr">
+        <div>
+          <span class="mono">${cid}</span>
+          <span style="font-size:12px;opacity:.8;margin-left:8px;">· ${child.uname} · ${child.label} · 📍${child.location}</span>
         </div>
-        ${ADJ_TYPES.filter(t=>state.cycle.hasInstall||(t.key!=='otc'&&t.key!=='device')).map(t=>buildAccordion(cid,t,child,svc)).join('')}
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;">
+          ${activeCount?`<span class="badge b-warning">${activeCount} type${activeCount>1?'s':''} active</span>`:'<span style="font-size:11px;opacity:.6;">No adjustments</span>'}
+          ${(()=>{
+            const txns = [...new Set(TRANSACTIONS.filter(t=>t.parentCID===state.account.parent&&t.childCID===cid&&t.cycleId===state.cycle.id).map(t=>t.txnNumber))];
+            return txns.length ? `<span style="font-size:10px;opacity:.75;font-family:'IBM Plex Mono',monospace;">${txns.join(', ')}</span>` : '';
+          })()}
+          <span style="font-size:10px;opacity:.65;">${state.cycle.start} → ${state.cycle.end} · ${state.cycle.fiscal}</span>
+        </div>
+      </div>
+      <div class="cid-block-body">
+        <div class="cid-block-charges">
+          ${ch.install?`<div class="charge-cell"><div class="charge-lbl">Installation (OTC)</div><div class="charge-val">NPR ${ch.install.toLocaleString()}</div></div>`:''}
+          ${ch.device?`<div class="charge-cell"><div class="charge-lbl">Device Charge (OTC)</div><div class="charge-val">NPR ${ch.device.toLocaleString()}</div></div>`:''}
+          <div class="charge-cell"><div class="charge-lbl">Service / MRC</div><div class="charge-val primary">NPR ${svc.toLocaleString()}</div><div class="charge-sub">NPR ${child.mrc.toLocaleString()}/mo · ${cd}d · ${state.cycle.start} → ${state.cycle.end}</div></div>
+        </div>
+        <table class="adj-table">
+          <thead><tr>
+            <th class="type-enable-col">On</th>
+            <th class="type-label-col">Type</th>
+            <th class="type-detail-col">Details</th>
+            <th class="type-amt-col">Adj Amount</th>
+          </tr></thead>
+          <tbody>
+            ${ADJ_TYPES.map(t => {
+              const d = state.adjData[cid][t.key];
+              const on = d.enabled;
+              const amt = calcAdj(cid, t.key, child, svc, ch);
+              const overCap = (t.key==='outage'||t.key==='unused') && amt > svc;
+              return `<tr class="${on?'enabled-row':''}">
+                <td class="type-enable-col">
+                  <button class="toggle ${on?'on':''}" onclick="toggleAdj('${cid}','${t.key}')"><div class="toggle-knob"></div></button>
+                </td>
+                <td class="type-label-col">
+                  <span class="badge ${t.badge}">${t.label}</span>
+                  <div style="font-size:11px;color:#888;margin-top:3px;">${t.desc}</div>
+                </td>
+                <td class="type-detail-col">
+                  ${on ? buildInlineDetail(cid, t, child, svc, ch) : '<span style="font-size:12px;color:#ccc;">Toggle to configure</span>'}
+                </td>
+                <td class="type-amt-col">
+                  ${on ? `<span class="mono" style="font-size:13px;font-weight:700;color:${overCap?'var(--danger)':'var(--success)'};">− NPR ${fmt(amt)}</span>${overCap?'<br/><span class="badge b-danger" style="margin-top:3px;">Over cap</span>':''}` : '<span style="color:#ccc;">—</span>'}
+                </td>
+              </tr>`;
+            }).join('')}
+          </tbody>
+        </table>
       </div>
     </div>`;
   }).join('');
 }
 
-function buildAccordion(cid,t,child,svcCharge){
-  const d=state.adjData[cid][t.key];
-  const on=d.enabled;
-  const cs=state.cycle.start,ce=state.cycle.end;
-  let body='';
+function buildInlineDetail(cid, t, child, svc, ch) {
+  const d = state.adjData[cid][t.key];
+  const cs = state.cycle.start, ce = state.cycle.end;
 
-  if(t.key==='outage'||t.key==='unused'){
-    const entries=d.entries||[];
-    const totalDays=entries.reduce((s,e)=>s+(e.start&&e.end?daysBetween(e.start,e.end):0),0);
-    const adj=parseFloat((child.mrc/30*totalDays).toFixed(2));
-    const entryRows=entries.map((e,idx)=>{
-      const ovlp=hasEntryOverlap(cid,e,t.key,e.id);
-      const ed=e.start&&e.end?daysBetween(e.start,e.end):0;
-      const ea=parseFloat((child.mrc/30*ed).toFixed(2));
-      return`<div class="period-block" style="border-color:${ovlp?'var(--danger)':'var(--border)'};">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-          <strong style="font-size:12px;color:#777;">Period #${idx+1}</strong>
-          <button class="btn-remove" onclick="removeEntry('${cid}','${t.key}',${e.id})" ${entries.length<=1?'disabled':''}>&#10005;</button>
+  if (t.key==='outage'||t.key==='unused') {
+    const entries = d.entries || [];
+    const entryRows = entries.map((e,idx) => {
+      const ovlp = hasOverlap(cid, e, t.key, e.id);
+      const ed = e.start&&e.end ? daysBetween(e.start,e.end) : 0;
+      const ea = parseFloat((child.mrc/30*ed).toFixed(2));
+      return `<div class="period-row${ovlp?' overlap':''}">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+          <strong style="font-size:11px;color:#888;">Period #${idx+1}${ed?' · '+ed+'d':''}</strong>
+          <button class="btn btn-default btn-xs btn-icon" onclick="removeEntry('${cid}','${t.key}',${e.id})" ${entries.length<=1?'disabled':''} style="color:var(--danger);">✕</button>
         </div>
-        ${ovlp?`<div class="ovlp-warn">&#9888; Overlaps with an existing adjustment for this date range.</div>`:''}
+        ${ovlp?`<div class="callout danger" style="margin-bottom:6px;padding:5px 9px;">⚠ Overlaps an existing adjustment for this range.</div>`:''}
         <div class="row">
-          <div class="col-4"><div class="form-group" style="margin-bottom:0;"><label style="font-size:12px;">Start Date</label>
-            <input class="form-control" type="date" value="${e.start}" min="${cs}" max="${ce}" onchange="updateEntry('${cid}','${t.key}',${e.id},'start',this.value)"/></div></div>
-          <div class="col-4"><div class="form-group" style="margin-bottom:0;"><label style="font-size:12px;">End Date</label>
-            <input class="form-control" type="date" value="${e.end}" min="${cs}" max="${ce}" onchange="updateEntry('${cid}','${t.key}',${e.id},'end',this.value)"/></div></div>
-          <div class="col-4"><div class="form-group" style="margin-bottom:0;"><label style="font-size:12px;">Reason</label>
-            <select class="form-control" onchange="updateEntry('${cid}','${t.key}',${e.id},'reason',this.value)">
-              <option value="">&#8212; Select &#8212;</option>${(REASONS[t.key]||[]).map(r=>`<option value="${r.id}" ${e.reason==r.id?'selected':''}>${r.t}</option>`).join('')}
-            </select></div></div>
+          <div class="col3 fgrp" style="margin-bottom:0;"><label style="font-size:11px;">Start</label>
+            <input class="form-control" type="date" value="${e.start}" onchange="updEntry('${cid}','${t.key}',${e.id},'start',this.value)"/></div>
+          <div class="col3 fgrp" style="margin-bottom:0;"><label style="font-size:11px;">End</label>
+            <input class="form-control" type="date" value="${e.end}" onchange="updEntry('${cid}','${t.key}',${e.id},'end',this.value)"/></div>
+          <div class="col3 fgrp" style="margin-bottom:0;"><label style="font-size:11px;">Reason</label>
+            <select class="form-control" onchange="updEntry('${cid}','${t.key}',${e.id},'reason',this.value)">
+              <option value="">— —</option>
+              ${(REASONS[t.key]||[]).map(r=>`<option value="${r.id}" ${e.reason==r.id?'selected':''}>${r.t}</option>`).join('')}
+              <option value="other" ${e.reason==='other'?'selected':''}>Other</option>
+            </select></div>
         </div>
-        <div style="margin-top:8px;text-align:right;">
-          ${ed>0?`<span class="mono" style="font-size:13px;color:var(--success);font-weight:600;">&#8722; NPR ${fmtAmt(ea)}</span> <span style="font-size:11px;color:#aaa;">(${ed} days)</span>`:'<span style="font-size:12px;color:#aaa;">Set dates to calculate</span>'}
-        </div>
+        ${e.reason==='other'?`<div class="fgrp" style="margin-top:8px;margin-bottom:0;"><label style="font-size:11px;">Remarks <span style="color:var(--danger);">*</span> <span style="font-weight:400;color:#aaa;">required</span></label><input class="form-control" type="text" placeholder="Describe the reason…" value="${e.otherRemarks||''}" oninput="updEntry('${cid}','${t.key}',${e.id},'otherRemarks',this.value)"/></div>`:''}
+        ${ed>0?`<div style="text-align:right;margin-top:5px;font-size:12px;">
+          <span class="mono" style="color:var(--success);font-weight:600;">− NPR ${fmt(ea)}</span>
+          <span style="color:#aaa;margin-left:4px;">(${ed}d)</span>
+        </div>`:''}
       </div>`;
     }).join('');
-    body=`${entryRows}
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;margin-bottom:14px;">
+
+    const totalDays = entries.reduce((s,e)=>s+(e.start&&e.end?daysBetween(e.start,e.end):0),0);
+    const totalAmt = parseFloat((child.mrc/30*totalDays).toFixed(2));
+
+    return `${entryRows}
+      <div style="display:flex;align-items:center;justify-content:space-between;margin:6px 0 10px;">
         <button class="btn btn-default btn-xs" onclick="addEntry('${cid}','${t.key}')">+ Add Period</button>
-        <div style="font-size:12px;">
-          <span style="color:#777;">${entries.length} period${entries.length!==1?'s':''} &middot; ${totalDays}d total</span>
-          <span class="mono" style="font-weight:700;color:${adj>svcCharge?'var(--danger)':'var(--success)'};margin-left:10px;">&#8722; NPR ${fmtAmt(adj)}</span>
-          ${adj>svcCharge?'<span class="label label-danger" style="margin-left:5px;">Exceeds cap</span>':''}
-        </div>
+        <span style="font-size:12px;color:#777;">${totalDays}d total</span>
       </div>
-      <div style="border-top:1px solid var(--border);padding-top:12px;margin-bottom:12px;">
-        <label style="font-size:11px;font-weight:600;color:#777;text-transform:uppercase;letter-spacing:.04em;display:block;margin-bottom:8px;">Attachments</label>
-        <div class="row">
-          <div class="col-6"><div class="form-group" style="margin-bottom:0;"><label style="font-size:12px;">System-Down Graph</label>
-            <label class="upload-zone" style="display:block;cursor:pointer;">
-              <svg style="display:block;margin:0 auto 4px;opacity:.4;" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke="#333" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              <span style="font-size:12px;color:#777;" id="glbl-${cid}-${t.key}">Upload image</span>
-              <input type="file" accept="image/*" style="display:none;" onchange="handleFile(this,'glbl-${cid}-${t.key}')"/>
-            </label>
-          </div></div>
-          <div class="col-6"><div class="form-group" style="margin-bottom:0;"><label style="font-size:12px;">Calculation Sheet</label>
-            <label class="upload-zone" style="display:block;cursor:pointer;">
-              <svg style="display:block;margin:0 auto 4px;opacity:.4;" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z" stroke="#333" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              <span style="font-size:12px;color:#777;" id="slbl-${cid}-${t.key}">Upload PDF / Excel</span>
-              <input type="file" accept=".pdf,.xlsx,.xls,.csv" style="display:none;" onchange="handleFile(this,'slbl-${cid}-${t.key}')"/>
-            </label>
-          </div></div>
-        </div>
+      <div class="row" style="margin-bottom:8px;">
+        <div class="col2 fgrp" style="margin-bottom:0;"><label style="font-size:11px;">System-Down Graph</label>
+          <label class="upload-area" style="display:block;">
+            <span class="upload-txt" id="g-${cid}-${t.key}">↑ Upload image</span>
+            <input type="file" accept="image/*" style="display:none;" onchange="setFileLbl(this,'g-${cid}-${t.key}')"/>
+          </label></div>
+        <div class="col2 fgrp" style="margin-bottom:0;"><label style="font-size:11px;">Calculation Sheet</label>
+          <label class="upload-area" style="display:block;">
+            <span class="upload-txt" id="s-${cid}-${t.key}">↑ Upload PDF/Excel</span>
+            <input type="file" accept=".pdf,.xlsx,.xls,.csv" style="display:none;" onchange="setFileLbl(this,'s-${cid}-${t.key}')"/>
+          </label></div>
       </div>
-      <div class="form-group" style="margin-bottom:0;"><label style="font-size:12px;">Remarks <span class="opt">(optional)</span></label>
-        <input class="form-control" type="text" placeholder="Notes for the approver..." value="${d.remarks||''}" oninput="state.adjData['${cid}']['${t.key}'].remarks=this.value"/>
+      <div class="fgrp" style="margin-bottom:0;"><label style="font-size:11px;">Remarks <span class="opt">optional</span></label>
+        <input class="form-control" type="text" placeholder="Notes for approver…" value="${d.remarks||''}" oninput="state.adjData['${cid}']['${t.key}'].remarks=this.value"/>
       </div>`;
+  }
 
-  } else if(t.key==='device'){
-    const devRows=child.devices.map((dev,i)=>{
-      if(d.devicePrices[i]===undefined)d.devicePrices[i]=dev.price;
-      const np=d.devicePrices[i];
-      const diff=dev.price-np;
-      const pct=dev.price>0?((diff/dev.price)*100).toFixed(1):0;
-      return`<div class="device-row">
-        <span style="flex:1;">${dev.name}</span>
-        <span class="mono" style="font-size:12px;color:#999;">NPR ${dev.price.toLocaleString()}</span>
-        <span style="color:#bbb;">&#8594;</span>
-        <input class="form-control mono" type="number" value="${np}" min="0" max="${dev.price}"
-          oninput="setDevPrice('${cid}',${i},this.value);renderAdjBlocks()" style="width:110px;text-align:right;"/>
-        <span class="mono" style="font-size:12px;min-width:130px;text-align:right;color:${diff>0?'var(--success)':'#bbb'};">
-          ${diff>0?`&#8722;&nbsp;NPR&nbsp;${diff.toLocaleString()} <span style="color:#aaa;font-size:11px;">(${pct}%)</span>`:'no change'}
-        </span>
-      </div>`;
+  if (t.key==='device') {
+    // Only show devices that exist in this cycle (added in this cycle or earlier)
+    const cycleOrder = state.account.cycles.map(c=>c.id);
+    const cycleIdx   = cycleOrder.indexOf(state.cycle.id);
+    const eligibleDevices = child.devices.filter(dev => {
+      const addedIdx = cycleOrder.indexOf(dev.cycleAdded || 'c1');
+      return addedIdx <= cycleIdx;
+    });
+    if (!eligibleDevices.length) {
+      return `<div class="callout info">No devices in this billing cycle. Device charges appear in the cycle they were installed.</div>`;
+    }
+    const devRows = eligibleDevices.map((dev,i) => {
+      const origIdx = child.devices.indexOf(dev);
+      if (d.devicePrices[origIdx]===undefined) d.devicePrices[origIdx] = dev.price;
+      const np = d.devicePrices[origIdx];
+      const diff = dev.price - np;
+      const pct = dev.price>0 ? ((diff/dev.price)*100).toFixed(1) : 0;
+      const isNew = dev.cycleAdded === state.cycle.id;
+      return `<tr>
+        <td>${dev.name}${isNew?` <span class="badge b-teal" style="font-size:9px;">New this cycle</span>`:''}</td>
+        <td class="mono" style="color:#999;">${dev.price.toLocaleString()}</td>
+        <td>→</td>
+        <td><input class="form-control mono" type="number" value="${np}" min="0" max="${dev.price}" style="width:110px;" oninput="setDevP('${cid}',${origIdx},this.value);renderAdjBlocks()"/></td>
+        <td class="mono" style="color:${diff>0?'var(--success)':'#bbb'};">${diff>0?`− ${diff.toLocaleString()} (${pct}%)`:'-'}</td>
+      </tr>`;
     }).join('');
-    const totAdj=child.devices.reduce((s,dev,i)=>s+(dev.price-(d.devicePrices[i]??dev.price)),0);
-    const totOrig=child.devices.reduce((s,d2)=>s+d2.price,0);
-    const totPct=totOrig>0?((totAdj/totOrig)*100).toFixed(1):0;
-    body=`<div style="border:1px solid var(--border);border-radius:3px;padding:10px 12px;margin-bottom:8px;">${devRows}</div>
-      <div style="text-align:right;font-size:13px;margin-bottom:12px;">
-        <span style="color:#777;">Total device adjustment: </span>
-        <span class="mono" style="font-weight:700;color:${totAdj>0?'var(--success)':'#777'};">NPR ${totAdj.toLocaleString()}</span>
-        ${totAdj>0?`<span style="color:#aaa;font-size:12px;margin-left:6px;">(${totPct}% off)</span>`:''}
-      </div>
-      <div class="form-group"><label>Reason</label>
-        <select class="form-control" onchange="setReason('${cid}','${t.key}',this.value)">
-          <option value="">&#8212; Select reason &#8212;</option>${(REASONS[t.key]||[]).map(r=>`<option value="${r.id}" ${d.reason==r.id?'selected':''}>${r.t}</option>`).join('')}
-        </select></div>
-      <div class="form-group" style="margin-bottom:0;"><label>Remarks <span class="opt">(optional)</span></label>
-        <input class="form-control" type="text" placeholder="Notes for the approver..." value="${d.remarks||''}" oninput="state.adjData['${cid}']['${t.key}'].remarks=this.value"/>
-      </div>`;
-
-  } else if(t.key==='otc'){
-    if(d.otcAmount===null)d.otcAmount=child.install;
-    const saving=Math.max(0,child.install-d.otcAmount);
-    const savPct=child.install>0?((saving/child.install)*100).toFixed(1):0;
-    body=`<div class="row" style="margin-bottom:4px;">
-      <div class="col-6"><div class="form-group"><label>Original Charge</label>
-        <div class="amt-display"><span class="mono">NPR ${child.install.toLocaleString()}</span></div></div></div>
-      <div class="col-6"><div class="form-group"><label>Adjusted Amount</label>
-        <input class="form-control mono" type="number" value="${d.otcAmount}" min="0" max="${child.install}"
-          oninput="setOTC('${cid}',this.value);renderAdjBlocks()"/></div></div>
-    </div>
-    ${saving>0?`<p style="font-size:13px;color:var(--success);margin-bottom:12px;">Saving: <strong class="mono">NPR ${saving.toLocaleString()}</strong> <span style="color:#aaa;font-size:12px;">(${savPct}% off)</span></p>`:'<div style="margin-bottom:12px;"></div>'}
-    <div class="form-group"><label>Reason</label>
-      <select class="form-control" onchange="setReason('${cid}','${t.key}',this.value)">
-        <option value="">&#8212; Select reason &#8212;</option>${(REASONS[t.key]||[]).map(r=>`<option value="${r.id}" ${d.reason==r.id?'selected':''}>${r.t}</option>`).join('')}
+    return `<table class="device-tbl" style="margin-bottom:8px;">
+      <thead><tr><th>Device</th><th>Current</th><th></th><th>New Price</th><th>Saving</th></tr></thead>
+      <tbody>${devRows}</tbody>
+    </table>
+    <div class="fgrp"><label style="font-size:11px;">Reason</label>
+      <select class="form-control" style="max-width:240px;" onchange="setReason('${cid}','${t.key}',this.value);renderAdjBlocks()">
+        <option value="">— Select —</option>${(REASONS[t.key]||[]).map(r=>`<option value="${r.id}" ${d.reason==r.id?'selected':''}>${r.t}</option>`).join('')}
+        <option value="other" ${d.reason==='other'?'selected':''}>Other</option>
       </select></div>
-    <div class="form-group" style="margin-bottom:0;"><label>Remarks <span class="opt">(optional)</span></label>
-      <input class="form-control" type="text" placeholder="Notes for the approver..." value="${d.remarks||''}" oninput="state.adjData['${cid}']['${t.key}'].remarks=this.value"/>
-    </div>`;
+    <div class="fgrp" style="margin-bottom:0;"><label style="font-size:11px;">Remarks${d.reason==='other'?' <span style=\'color:var(--danger);\'>*</span>':''}</label>
+      <input class="form-control" type="text" placeholder="${d.reason==='other'?'Required — describe the reason…':'Notes…'}" value="${d.remarks||''}" oninput="state.adjData['${cid}']['${t.key}'].remarks=this.value"/></div>`;
+  }
 
-  } else if(t.key==='renewal'){
-    if(d.renewalMRC===null)d.renewalMRC=child.mrc;
-    const diff=child.mrc-d.renewalMRC;
-    body=`<div class="row">
-      <div class="col-4"><div class="form-group"><label>Current MRC</label>
-        <div class="amt-display"><span class="mono" style="color:#999;">NPR ${child.mrc.toLocaleString()}</span></div></div></div>
-      <div class="col-4"><div class="form-group"><label>New MRC</label>
-        <input class="form-control mono" type="number" value="${d.renewalMRC}" oninput="setRenewal('${cid}',this.value)"/></div></div>
-      <div class="col-4"><div class="form-group"><label>New Devices?</label>
-        <select class="form-control"><option value="no">No new devices</option><option value="yes">Yes, new install</option></select></div></div>
+  if (t.key==='otc') {
+    if (!ch.install) {
+      return `<div class="callout info">No installation charge in this billing cycle. OTC / installation adjustments only apply to cycles that include a new installation.</div>`;
+    }
+    if (d.otcAmount===null) d.otcAmount = ch.install || 0;
+    const saving = Math.max(0, (ch.install||0) - d.otcAmount);
+    const newDeviceNames = (ch.newDevices||[]).join(', ');
+    return `${newDeviceNames ? `<div style="font-size:11px;color:#555;margin-bottom:8px;padding:5px 8px;background:#f7f9fb;border-radius:3px;border-left:3px solid var(--primary);">Devices installed this cycle: <strong>${newDeviceNames}</strong></div>` : ''}
+    <div class="row">
+      <div class="col3 fgrp" style="margin-bottom:0;"><label style="font-size:11px;">Original Charge</label>
+        <div class="amt-box">NPR ${(ch.install||0).toLocaleString()}</div></div>
+      <div class="col3 fgrp" style="margin-bottom:0;"><label style="font-size:11px;">Adjusted Amount</label>
+        <input class="form-control mono" type="number" value="${d.otcAmount}" min="0" max="${ch.install||0}" oninput="setOTC('${cid}',this.value,'${ch.install||0}');renderAdjBlocks()"/></div>
+      <div class="col3 fgrp" style="margin-bottom:0;"><label style="font-size:11px;">Saving</label>
+        <div class="amt-box" style="color:${saving>0?'var(--success)':'#aaa'};">${saving>0?`NPR ${saving.toLocaleString()}`:'-'}</div></div>
     </div>
-    <p style="font-size:13px;color:${diff>0?'var(--success)':'#777'};margin-bottom:12px;">MRC change: <strong class="mono">${diff>0?'&#8722;':'+'}NPR ${Math.abs(diff).toLocaleString()}</strong></p>
-    <div class="form-group"><label>Reason</label>
-      <select class="form-control" onchange="setReason('${cid}','${t.key}',this.value)">
-        <option value="">&#8212; Select reason &#8212;</option>${(REASONS[t.key]||[]).map(r=>`<option value="${r.id}" ${d.reason==r.id?'selected':''}>${r.t}</option>`).join('')}
+    <div class="fgrp" style="margin-top:8px;"><label style="font-size:11px;">Reason</label>
+      <select class="form-control" style="max-width:240px;" onchange="setReason('${cid}','${t.key}',this.value);renderAdjBlocks()">
+        <option value="">— Select —</option>${(REASONS[t.key]||[]).map(r=>`<option value="${r.id}" ${d.reason==r.id?'selected':''}>${r.t}</option>`).join('')}
+        <option value="other" ${d.reason==='other'?'selected':''}>Other</option>
       </select></div>
-    <div class="form-group" style="margin-bottom:0;"><label>Remarks <span class="opt">(optional)</span></label>
-      <input class="form-control" type="text" placeholder="Notes for the approver..." value="${d.remarks||''}" oninput="state.adjData['${cid}']['${t.key}'].remarks=this.value"/>
-    </div>`;
-
-  } else if(t.key==='other'){
-    body=`<div class="row">
-      <div class="col-6"><div class="form-group"><label>Amount (NPR)</label>
-        <input class="form-control mono" type="number" value="${d.otherAmount||''}" min="0" oninput="setOther('${cid}',this.value)" placeholder="0"/></div></div>
-      <div class="col-6"><div class="form-group"><label>Reason <span class="opt">(optional)</span></label>
-        <select class="form-control" onchange="setReason('${cid}','${t.key}',this.value)">
-          <option value="">&#8212; Select &#8212;</option>${(REASONS[t.key]||[]).map(r=>`<option value="${r.id}" ${d.reason==r.id?'selected':''}>${r.t}</option>`).join('')}
-        </select></div></div>
-    </div>
-    <div class="form-group" style="margin-bottom:0;"><label>Remarks</label>
-      <input class="form-control" type="text" placeholder="Describe this charge..." value="${d.remarks||''}" oninput="state.adjData['${cid}']['${t.key}'].remarks=this.value"/>
+    <div class="fgrp" style="margin-bottom:0;"><label style="font-size:11px;">Remarks${d.reason==='other'?' <span style=\'color:var(--danger);\'>*</span>':''}</label>
+      <input class="form-control" type="text" value="${d.remarks||''}" placeholder="${d.reason==='other'?'Required — describe the reason…':'Notes…'}" oninput="state.adjData['${cid}']['${t.key}'].remarks=this.value"/></div>
+    <div style="margin-top:8px;">
+      <label class="upload-area" style="display:inline-block;padding:6px 12px;">
+        <span class="upload-txt" id="otc-${cid}">↑ Upload Calculation Sheet</span>
+        <input type="file" accept=".pdf,.xlsx,.xls,.csv" style="display:none;" onchange="setFileLbl(this,'otc-${cid}')"/>
+      </label>
     </div>`;
   }
 
-  return`<div class="adj-accordion ${on?'active':''}">
-    <div class="adj-accordion-hdr" onclick="toggleAdj('${cid}','${t.key}')">
-      <div class="toggle ${on?'on':''}"><div class="toggle-knob"></div></div>
-      <div style="flex:1;">
-        <span style="font-size:13px;font-weight:600;">${t.label}</span>
-        <span style="font-size:12px;color:#999;margin-left:8px;">${t.desc}</span>
-      </div>
-      ${on?`<span class="label ${t.badge}">Active</span>`:''}
+  if (t.key==='renewal') {
+    if (d.renewalMRC===null) d.renewalMRC = child.mrc;
+    const diff = child.mrc - d.renewalMRC;
+    return `<div class="row">
+      <div class="col3 fgrp" style="margin-bottom:0;"><label style="font-size:11px;">Current MRC</label>
+        <div class="amt-box" style="color:#999;">NPR ${child.mrc.toLocaleString()}</div></div>
+      <div class="col3 fgrp" style="margin-bottom:0;"><label style="font-size:11px;">New MRC</label>
+        <input class="form-control mono" type="number" value="${d.renewalMRC}" oninput="setRenewal('${cid}',this.value)"/></div>
+      <div class="col3 fgrp" style="margin-bottom:0;"><label style="font-size:11px;">New Devices?</label>
+        <select class="form-control"><option value="no">No new devices</option><option value="yes">Yes — new install</option></select></div>
     </div>
-    ${on?`<div class="adj-accordion-body">${body}</div>`:''}
-  </div>`;
+    <div style="font-size:12px;color:${diff>0?'var(--success)':'#888'};margin:8px 0;">MRC change: <strong>${diff>0?'−':'+'}NPR ${Math.abs(diff).toLocaleString()}</strong></div>
+    <div class="fgrp"><label style="font-size:11px;">Reason</label>
+      <select class="form-control" style="max-width:240px;" onchange="setReason('${cid}','${t.key}',this.value);renderAdjBlocks()">
+        <option value="">— Select —</option>${(REASONS[t.key]||[]).map(r=>`<option value="${r.id}" ${d.reason==r.id?'selected':''}>${r.t}</option>`).join('')}
+        <option value="other" ${d.reason==='other'?'selected':''}>Other</option>
+      </select></div>
+    <div class="fgrp" style="margin-bottom:0;"><label style="font-size:11px;">Remarks${d.reason==='other'?' <span style=\'color:var(--danger);\'>*</span>':''}</label>
+      <input class="form-control" type="text" value="${d.remarks||''}" placeholder="${d.reason==='other'?'Required — describe the reason…':'Notes…'}" oninput="state.adjData['${cid}']['${t.key}'].remarks=this.value"/></div>`;
+  }
+
+  if (t.key==='other') {
+    return `<div class="row">
+      <div class="col2 fgrp" style="margin-bottom:0;"><label style="font-size:11px;">Amount (NPR)</label>
+        <input class="form-control mono" type="number" value="${d.otherAmount||''}" min="0" placeholder="0" oninput="setOther('${cid}',this.value)"/></div>
+      <div class="col2 fgrp" style="margin-bottom:0;"><label style="font-size:11px;">Reason</label>
+        <select class="form-control" onchange="setReason('${cid}','${t.key}',this.value);renderAdjBlocks()">
+          <option value="">— Select —</option>${(REASONS[t.key]||[]).map(r=>`<option value="${r.id}" ${d.reason==r.id?'selected':''}>${r.t}</option>`).join('')}
+          <option value="other" ${d.reason==='other'?'selected':''}>Other</option>
+        </select></div>
+    </div>
+    <div class="fgrp" style="margin-top:8px;margin-bottom:0;"><label style="font-size:11px;">Remarks / Description${d.reason==='other'?' <span style=\'color:var(--danger);\'>*</span>':''}</label>
+      <input class="form-control" type="text" value="${d.remarks||''}" placeholder="${d.reason==='other'?'Required — describe the reason…':'Describe this charge…'}" oninput="state.adjData['${cid}']['${t.key}'].remarks=this.value"/></div>`;
+  }
+  return '';
 }
 
-function toggleAdj(cid,key){state.adjData[cid][key].enabled=!state.adjData[cid][key].enabled;renderAdjBlocks();}
-function addEntry(cid,key){state.adjData[cid][key].entries.push({id:drIdx++,start:'',end:'',reason:''});renderAdjBlocks();}
-function removeEntry(cid,key,id){if(state.adjData[cid][key].entries.length<=1)return;state.adjData[cid][key].entries=state.adjData[cid][key].entries.filter(e=>e.id!==id);renderAdjBlocks();}
-function updateEntry(cid,key,id,field,val){const e=state.adjData[cid][key].entries.find(x=>x.id===id);if(e){e[field]=val;renderAdjBlocks();}}
-function setDevPrice(cid,idx,val){const ch=CID_DATA[state.parentCID].children.find(c=>c.id===cid);state.adjData[cid]['device'].devicePrices[idx]=Math.min(+val,ch.devices[idx].price);}
-function setOTC(cid,val){const ch=CID_DATA[state.parentCID].children.find(c=>c.id===cid);state.adjData[cid]['otc'].otcAmount=Math.min(+val,ch.install);}
-function setRenewal(cid,val){state.adjData[cid]['renewal'].renewalMRC=+val;}
-function setOther(cid,val){state.adjData[cid]['other'].otherAmount=+val;}
-function setReason(cid,key,val){state.adjData[cid][key].reason=val;}
-function hasEntryOverlap(cid,entry,key,eid){
-  if(!entry.start||!entry.end)return false;
-  const vsE=EXISTING_ADJ.some(ea=>ea.cid===cid&&ea.type===key&&!(entry.end<ea.start||entry.start>ea.end));
-  const sib=(state.adjData[cid]?.[key]?.entries||[]).filter(e=>e.id!==eid&&e.start&&e.end);
-  return vsE||sib.some(s=>!(entry.end<s.start||entry.start>s.end));
-}
-function hasOverlapEntries(cid,entries,key){return entries.some(e=>hasEntryOverlap(cid,e,key,e.id));}
+// ─── HELPERS ──────────────────────────────────────────────────────────────────
+function toggleAdj(cid,key) { state.adjData[cid][key].enabled = !state.adjData[cid][key].enabled; renderAdjBlocks(); }
+function addEntry(cid,key) { state.adjData[cid][key].entries.push({id:eidx++,start:'',end:'',reason:''}); renderAdjBlocks(); }
+function removeEntry(cid,key,id) { if(state.adjData[cid][key].entries.length<=1)return; state.adjData[cid][key].entries=state.adjData[cid][key].entries.filter(e=>e.id!==id); renderAdjBlocks(); }
+function updEntry(cid,key,id,f,v) { const e=state.adjData[cid][key].entries.find(x=>x.id===id); if(e){e[f]=v;renderAdjBlocks();} }
+function setDevP(cid,idx,val) { const ch=state.account.children.find(c=>c.id===cid); state.adjData[cid]['device'].devicePrices[idx]=Math.min(+val,ch.devices[idx].price); }
+function setOTC(cid,val,orig) { state.adjData[cid]['otc'].otcAmount=Math.min(+val,+orig); }
+function setRenewal(cid,val) { state.adjData[cid]['renewal'].renewalMRC=+val; }
+function setOther(cid,val) { state.adjData[cid]['other'].otherAmount=+val; }
+function setReason(cid,key,val) { state.adjData[cid][key].reason=val; }
+function setFileLbl(inp,id) { const f=inp.files[0]; if(f&&document.getElementById(id)) document.getElementById(id).textContent=f.name+' ('+(f.size/1024).toFixed(1)+' KB)'; }
 
-function renderPreview(){
-  const data=CID_DATA[state.parentCID];
-  const cd=daysBetween(state.cycle.start,state.cycle.end);
-  let grand=0,cidHtml='';
-  state.selectedCIDs.forEach(cid=>{
-    const child=data.children.find(c=>c.id===cid);if(!child)return;
-    const svc=Math.round((child.mrc/30)*cd);
-    const adj=state.adjData[cid]||{};
-    let cidTotal=0,adjRows='';
-    ADJ_TYPES.forEach(t=>{
-      const d=adj[t.key];if(!d?.enabled)return;
-      let amt=0,detail='';
-      if(t.key==='outage'||t.key==='unused'){
+function calcAdj(cid, key, child, svc, ch) {
+  const d = state.adjData[cid]?.[key];
+  if (!d?.enabled) return 0;
+  if (key==='outage'||key==='unused') {
+    const entries = (d.entries||[]).filter(e=>e.start&&e.end);
+    const td = entries.reduce((s,e)=>s+daysBetween(e.start,e.end),0);
+    return parseFloat((child.mrc/30*td).toFixed(2));
+  }
+  if (key==='device') {
+    const cycleOrder = state.account.cycles.map(c=>c.id);
+    const cycleIdx   = state.cycle ? cycleOrder.indexOf(state.cycle.id) : cycleOrder.length-1;
+    return child.devices.reduce((s,dev,i)=>{
+      const addedIdx = cycleOrder.indexOf(dev.cycleAdded||'c1');
+      if (addedIdx > cycleIdx) return s; // device not yet in this cycle
+      return s + (dev.price - (d.devicePrices[i]??dev.price));
+    }, 0);
+  }
+  if (key==='otc') {
+    if (!ch.install) return 0;
+    return Math.max(0,(ch.install||0)-((d.otcAmount!=null?d.otcAmount:(ch.install||0))));
+  }
+  if (key==='renewal') { const df=child.mrc-(d.renewalMRC??child.mrc); return df>0?df:0; }
+  if (key==='other') return d.otherAmount||0;
+  return 0;
+}
+
+function hasOverlap(cid, entry, key, eid) {
+  if (!entry.start||!entry.end) return false;
+  const vsExisting = EXISTING_ADJ.some(ea => ea.cid===cid && ea.type===key && !(entry.end<ea.start||entry.start>ea.end));
+  const siblings = (state.adjData[cid]?.[key]?.entries||[]).filter(e=>e.id!==eid&&e.start&&e.end);
+  return vsExisting || siblings.some(s=>!(entry.end<s.start||entry.start>s.end));
+}
+
+// ─── PREVIEW ──────────────────────────────────────────────────────────────────
+function renderPreview() {
+  const cd = daysBetween(state.cycle.start, state.cycle.end);
+  let grand = 0, cidHtml = '';
+  state.selectedCIDs.forEach(cid => {
+    const child = state.account.children.find(c=>c.id===cid);
+    if (!child) return;
+    const ch = state.cycle.charges[cid] || {};
+    const svc = Math.round((child.mrc/30)*cd);
+    let cidTotal=0, adjRows='';
+    ADJ_TYPES.forEach(t => {
+      const d = state.adjData[cid]?.[t.key];
+      if (!d?.enabled) return;
+      const amt = calcAdj(cid, t.key, child, svc, ch);
+      const overCap = (t.key==='outage'||t.key==='unused') && amt>svc;
+      let detail='';
+      if (t.key==='outage'||t.key==='unused') {
         const entries=(d.entries||[]).filter(e=>e.start&&e.end);
-        const td=entries.reduce((s,e)=>s+daysBetween(e.start,e.end),0);
-        amt=parseFloat((child.mrc/30*td).toFixed(2));
-        detail=entries.map((e,i)=>{const rl=(REASONS[t.key]||[]).find(r=>r.id==e.reason)?.t||'\u2014';return`<div style="font-size:11px;color:#777;margin-top:2px;">#${i+1}: ${e.start} \u2013 ${e.end} (${daysBetween(e.start,e.end)}d) &middot; ${rl}</div>`;}).join('');
-      } else if(t.key==='device'){
-        amt=child.devices.reduce((s,dev,i)=>s+(dev.price-(d.devicePrices[i]??dev.price)),0);
-        detail='Device price revision';
-      } else if(t.key==='otc'){
-        amt=child.install-(d.otcAmount??child.install);
-        detail=`Install NPR ${child.install.toLocaleString()} &rarr; NPR ${(d.otcAmount??child.install).toLocaleString()}`;
-      } else if(t.key==='renewal'){
-        const df=child.mrc-(d.renewalMRC??child.mrc);amt=df>0?df:0;
-        detail=`MRC NPR ${child.mrc.toLocaleString()} &rarr; NPR ${(d.renewalMRC??child.mrc).toLocaleString()}`;
-      } else if(t.key==='other'){
-        amt=d.otherAmount||0;detail=d.remarks||'Miscellaneous';
-      }
-      const overCap=(t.key==='outage'||t.key==='unused')&&amt>svc;
+        detail=entries.map((e,i)=>{
+          const rl=(REASONS[t.key]||[]).find(r=>r.id==e.reason)?.t||'—';
+          return `<div style="font-size:11px;color:#888;margin-top:2px;">#${i+1}: ${e.start} → ${e.end} (${daysBetween(e.start,e.end)}d) · ${rl}</div>`;
+        }).join('');
+      } else if (t.key==='device') { detail='Device price revision'; }
+      else if (t.key==='otc') { detail=`Install: NPR ${(ch.install||0).toLocaleString()} → NPR ${(d.otcAmount??0).toLocaleString()}`; }
+      else if (t.key==='renewal') { detail=`MRC: NPR ${child.mrc.toLocaleString()} → NPR ${d.renewalMRC??child.mrc}`; }
+      else if (t.key==='other') { detail=d.remarks||'Miscellaneous'; }
       cidTotal+=amt;
-      const rmk=d.remarks&&t.key!=='other'?`<div style="font-size:11px;color:#888;margin-top:2px;font-style:italic;">Remarks: ${d.remarks}</div>`:'';
-      adjRows+=`<div class="prev-adj-row">
-        <div><span class="label ${t.badge}">${t.label}</span><div style="font-size:12px;color:#777;margin-top:4px;">${detail}</div>${rmk}</div>
+      const rmk=d.remarks&&t.key!=='other'?`<div style="font-size:11px;color:#aaa;margin-top:2px;font-style:italic;">${d.remarks}</div>`:'';
+      adjRows+=`<div class="prev-row">
+        <div><span class="badge ${t.badge}">${t.label}</span><div style="font-size:12px;color:#888;margin-top:3px;">${detail}</div>${rmk}</div>
         <div style="text-align:right;flex-shrink:0;">
-          <span class="mono" style="font-size:13px;font-weight:700;color:${overCap?'var(--danger)':'var(--success)'};">&#8722; NPR ${fmtAmt(amt)}</span>
-          ${overCap?'<br/><span class="label label-danger" style="margin-top:3px;">Exceeds service cap</span>':''}
+          <span class="mono" style="font-size:13px;font-weight:700;color:${overCap?'var(--danger)':'var(--success)'};">− NPR ${fmt(amt)}</span>
+          ${overCap?'<br/><span class="badge b-danger">Over cap</span>':''}
         </div>
       </div>`;
     });
-    if(!adjRows)adjRows=`<div class="prev-adj-row"><span style="font-size:12px;color:#bbb;font-style:italic;">No adjustments configured</span></div>`;
+    if (!adjRows) adjRows=`<div class="prev-row"><span style="font-size:12px;color:#ccc;font-style:italic;">No adjustments configured</span></div>`;
     grand+=cidTotal;
-    const orig=child.install+child.deviceCharge+svc;
+    const orig=(ch.install||0)+(ch.device||0)+svc;
     cidHtml+=`<div class="prev-cid">
       <div class="prev-cid-hdr">
-        <div><span class="mono" style="font-size:12px;font-weight:700;color:var(--primary);">${cid}</span><span style="font-size:12px;color:#777;margin-left:6px;">&middot; ${child.label}</span></div>
-        <span class="mono" style="font-size:13px;font-weight:700;color:var(--success);">&#8722; NPR ${fmtAmt(cidTotal)}</span>
+        <div>
+          <span class="mono" style="font-size:12px;font-weight:700;color:var(--primary);">${cid}</span>
+          <span style="font-size:12px;color:#888;margin-left:6px;">· ${child.uname} · ${child.label}</span>
+        </div>
+        <span class="mono" style="font-size:13px;font-weight:700;color:var(--success);">− NPR ${fmt(cidTotal)}</span>
       </div>
       ${adjRows}
       <div class="prev-tot">
-        <span style="font-size:13px;color:#555;">Net payable <span style="color:#aaa;">(original NPR ${orig.toLocaleString()})</span></span>
+        <span style="font-size:13px;color:#555;">Net payable <span style="color:#aaa;">(was NPR ${orig.toLocaleString()})</span></span>
         <span class="mono" style="font-size:15px;font-weight:700;">NPR ${Math.max(0,orig-cidTotal).toLocaleString()}</span>
       </div>
     </div>`;
   });
-  const anyOvlp=state.selectedCIDs.some(cid=>ADJ_TYPES.some(t=>{if(t.key!=='outage'&&t.key!=='unused')return false;const d=state.adjData[cid]?.[t.key];return d?.enabled&&hasOverlapEntries(cid,d.entries||[],t.key);}));
-  document.getElementById('preview-content').innerHTML=`
-    <div class="box" style="box-shadow:none;border:1px solid var(--border);margin-bottom:15px;">
-      <div class="box-header" style="background:#f7f7f7;"><div class="box-title" style="font-size:14px;">Adjustment Summary</div></div>
-      <div class="box-body">
-        <table class="table-summary" style="max-width:580px;">
-          <tr><th>Parent CID</th><td class="mono" style="color:var(--primary);">${state.parentCID}</td></tr>
-          <tr><th>Billing Cycle</th><td>${state.cycle.label}</td></tr>
+
+  const anyOvlp = state.selectedCIDs.some(cid =>
+    ADJ_TYPES.some(t => {
+      if (t.key!=='outage'&&t.key!=='unused') return false;
+      const d=state.adjData[cid]?.[t.key];
+      return d?.enabled&&(d.entries||[]).some(e=>hasOverlap(cid,e,t.key,e.id));
+    })
+  );
+
+  document.getElementById('preview-content').innerHTML = `
+    <div class="card" style="box-shadow:none;border:1px solid var(--border);margin-bottom:14px;">
+      <div class="card-hdr" style="background:#f7f9fb;"><div class="card-title" style="font-size:14px;">Summary</div></div>
+      <div class="card-body" style="padding:12px;">
+        <table class="smry-tbl">
+          <tr><th>Parent CID</th><td class="mono" style="color:var(--primary);">${state.account.parent}</td></tr>
+          <tr><th>UName</th><td>${state.account.uname}</td></tr>
+          <tr><th>Billing Cycle</th><td>${state.cycle.label} (${state.cycle.start} → ${state.cycle.end})</td></tr>
           <tr><th>Mode</th><td style="text-transform:capitalize;">${state.mode}</td></tr>
-          <tr><th>CIDs Adjusted</th><td>${state.selectedCIDs.length} branch${state.selectedCIDs.length>1?'es':''}</td></tr>
+          <tr><th>Branches</th><td>${state.selectedCIDs.length} CID${state.selectedCIDs.length>1?'s':''}: ${state.selectedCIDs.join(', ')}</td></tr>
         </table>
       </div>
     </div>
-    <h4 style="font-size:14px;font-weight:600;color:#555;margin-bottom:10px;">Per-CID Breakdown</h4>
+    <h4 style="font-size:13px;font-weight:600;color:#666;margin-bottom:10px;text-transform:uppercase;letter-spacing:.04em;">Per-CID Breakdown</h4>
     ${cidHtml}
-    <div style="background:var(--primary);color:#fff;border-radius:3px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+    <div class="grand-bar">
       <span style="font-size:15px;font-weight:600;">Grand Total Adjustment</span>
-      <span class="mono" style="font-size:20px;font-weight:700;">NPR ${fmtAmt(grand)}</span>
+      <span class="mono" style="font-size:20px;font-weight:700;">NPR ${fmt(grand)}</span>
     </div>
-    ${anyOvlp?`<div class="callout callout-danger">&#9888; Date overlap detected in one or more CIDs &#8212; please review before submitting.</div>`:''}
-    <div style="font-size:12px;color:#999;">&#9432; No changes are applied until the adjustment is approved by the billing manager.</div>`;
+    ${anyOvlp?`<div class="callout danger">⚠ Date overlap detected — please review before submitting.</div>`:''}
+    <div style="font-size:12px;color:#aaa;">ℹ No changes are applied until approved by the billing manager.</div>`;
 }
 
-function submitAdjustment(){
-  const ref='ADJ-'+Date.now().toString(36).toUpperCase();
-  const approver=['ujwalish.khadgi','suraj.bista.mc','bikash.bhattarai'][Math.floor(Math.random()*3)];
-  document.getElementById('sub-ref').textContent=ref;
-  document.getElementById('sub-approver').textContent=approver;
-  const types=[...new Set(state.selectedCIDs.flatMap(cid=>ADJ_TYPES.filter(t=>state.adjData[cid]?.[t.key]?.enabled).map(t=>t.label)))];
-  document.getElementById('sub-summary').innerHTML=`<table class="table-summary">
+function submitAdj() {
+  const ref = 'ADJ-'+Date.now().toString(36).toUpperCase();
+  const approver = ['ujwalish.khadgi','suraj.bista.mc','bikash.bhattarai'][Math.floor(Math.random()*3)];
+  document.getElementById('sub-ref').textContent = ref;
+  document.getElementById('sub-approver').textContent = approver;
+  const types = [...new Set(state.selectedCIDs.flatMap(cid => ADJ_TYPES.filter(t=>state.adjData[cid]?.[t.key]?.enabled).map(t=>t.label)))];
+  document.getElementById('sub-summary').innerHTML = `<table class="smry-tbl">
     <tr><th>Reference</th><td class="mono">${ref}</td></tr>
-    <tr><th>Parent CID</th><td class="mono" style="color:var(--primary);">${state.parentCID}</td></tr>
+    <tr><th>Parent CID</th><td class="mono" style="color:var(--primary);">${state.account.parent}</td></tr>
+    <tr><th>UName</th><td>${state.account.uname}</td></tr>
     <tr><th>Billing Cycle</th><td>${state.cycle.label}</td></tr>
     <tr><th>Branch CIDs</th><td>${state.selectedCIDs.join(', ')}</td></tr>
-    <tr><th>Mode</th><td style="text-transform:capitalize;">${state.mode}</td></tr>
-    <tr><th>Adjustment Types</th><td>${types.join(', ')||'&#8212;'}</td></tr>
-    <tr><th>Assigned Approver</th><td>${approver}</td></tr>
+    <tr><th>Adjustment Types</th><td>${types.join(', ')||'—'}</td></tr>
+    <tr><th>Approver</th><td>${approver}</td></tr>
   </table>`;
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   document.getElementById('sec-6').classList.add('active');
-  state.step=6;renderStepper();
+  state.step=6; renderStepper();
 }
 
-function resetForm(){
-  state={step:1,parentCID:'',cycle:null,selectedCIDs:[],adjData:{},mode:'individual'};
-  drIdx=0;bulkState={entries:[{id:0,start:'',end:'',reason:''}],type:'',collapsed:false};bulkEntryIdx=1;
-  document.getElementById('parent-cid').value='';
+function resetForm() {
+  state={step:1,account:null,cycle:null,selectedCIDs:[],adjData:{},mode:'individual',_preSelectCID:null,_preSelectCycles:null,_expandedCIDs:new Set()};
+  eidx=0; bulkState={entries:[{id:0,start:'',end:'',reason:''}],type:'',open:true}; beidx=1;
+  ['s-cid','s-uname','s-txn','s-pi','s-fy','s-from','s-to','cid-filter'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('search-results').innerHTML='';
+  document.getElementById('sel-account').style.display='none';
+  const note = document.getElementById('cid-preselect-note');
+  if (note) note.style.display = 'none';
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   document.getElementById('sec-1').classList.add('active');
   renderStepper();
 }
 
+// ─── UTILS ────────────────────────────────────────────────────────────────────
 function daysBetween(a,b){if(!a||!b)return 0;return Math.max(0,Math.round((new Date(b)-new Date(a))/86400000)+1);}
-function fmtAmt(n){return(+n).toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2});}
-function handleFile(input,labelId){const f=input.files[0];if(f)document.getElementById(labelId).textContent=f.name+' ('+(f.size/1024).toFixed(1)+' KB)';}
+function fmt(n){return(+n).toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2});}
 
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+// Populate fiscal year dropdown from all accounts
+(function populateFYDropdown() {
+  const allFY = [...new Set(Object.values(ACCOUNTS).flatMap(a => a.cycles.map(c => c.fiscal)))].sort();
+  const sel = document.getElementById('s-fy');
+  allFY.forEach(fy => { const o=document.createElement('option'); o.value=fy; o.textContent=fy; sel.appendChild(o); });
+})();
 renderStepper();
 </script>
 </body>
